@@ -57,8 +57,30 @@ function sendJson(res: ServerResponse, statusCode: number, payload: Record<strin
     'content-type': 'application/json; charset=utf-8',
     'cache-control': 'no-store',
     'x-content-type-options': 'nosniff',
+    ...corsHeaders(),
   });
   res.end(body);
+}
+
+/**
+ * CORS support: the static chat page may be hosted on a DIFFERENT origin
+ * (e.g. GitHub Pages) than this API server. Allowed origins default to "*"
+ * (public read/chat API, no cookies) or a comma-separated CORS_ORIGIN list.
+ */
+function corsHeaders(): Record<string, string> {
+  const origin = process.env.CORS_ORIGIN?.trim();
+  return {
+    'access-control-allow-origin': origin && origin.length > 0 ? origin : '*',
+    'access-control-allow-methods': 'GET, POST, OPTIONS',
+    'access-control-allow-headers': 'content-type',
+    'access-control-max-age': '86400',
+    vary: 'Origin',
+  };
+}
+
+function sendCors(res: ServerResponse, statusCode = 204): void {
+  res.writeHead(statusCode, corsHeaders());
+  res.end();
 }
 
 function publicDir(): string {
@@ -107,6 +129,12 @@ interface HandleDeps {
 
 async function handle(req: IncomingMessage, res: ServerResponse, deps: HandleDeps): Promise<void> {
   const method = (req.method ?? 'GET').toUpperCase();
+
+  // CORS preflight — must be answered before any routing.
+  if (method === 'OPTIONS') {
+    sendCors(res);
+    return;
+  }
   const url = new URL(req.url ?? '/', 'http://localhost');
   const pathName = decodeURIComponent(url.pathname);
 
