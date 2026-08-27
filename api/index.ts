@@ -1,9 +1,13 @@
 /**
- * VERCEL SERVERLESS ENTRY (Step: Vercel deployment support).
+ * VERCEL SERVERLESS ENTRY (Vercel deployment support).
  *
  * Vercel routes every /api/* request here (see vercel.json). This is a thin
  * adapter over the EXISTING server routing — same ToolGate, ProviderRouter,
  * safety rules and graceful degradation; nothing is duplicated.
+ *
+ * Because classic `routes` rewrite the URL, the original request path is
+ * forwarded via the `bkpath` query parameter and restored here, so the shared
+ * router sees exactly what the user asked for.
  *
  * Note (honest limitation): serverless instances recycle, so in-memory
  * conversation state persists only per warm instance — single questions and
@@ -18,8 +22,15 @@ const deps = createHandleDeps();
 
 export default async function handler(req: IncomingMessage, res: ServerResponse): Promise<void> {
   try {
+    // Restore the original public path (e.g. /api/chat) for the shared router.
+    const url = new URL(req.url ?? '/', 'http://localhost');
+    const originalPath = url.searchParams.get('bkpath');
+    if (originalPath && originalPath.startsWith('/api/')) {
+      url.searchParams.delete('bkpath');
+      req.url = originalPath + (url.searchParams.toString() ? `?${url.searchParams.toString()}` : '');
+    }
     await handleRequest(req, res, deps);
-  } catch (error) {
+  } catch {
     if (!res.headersSent) {
       res.writeHead(500, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
     }

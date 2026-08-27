@@ -11,3 +11,8 @@ coverage/
 # logs & os noise
 *.log
 .DS_Store
+.vercel
+.env*
+
+.vercel/
+.env.local

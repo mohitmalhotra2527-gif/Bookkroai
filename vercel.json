@@ -1,13 +1,15 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/index.ts", "use": "@vercel/node", "config": { "maxDuration": 60 } },
+    { "src": "dist/api/index.js", "use": "@vercel/node", "config": { "maxDuration": 60 } },
     { "src": "app/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/index" },
-    { "src": "/chat", "dest": "/chat.html" },
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/(.*)", "dest": "/$1" }
+    { "src": "/api/(.*)", "dest": "/dist/api?bkpath=/api/$1" },
+    { "src": "/$", "dest": "/app/index.html" },
+    { "src": "/chat", "dest": "/app/chat.html" },
+    { "src": "/privacy", "dest": "/app/privacy.html" },
+    { "src": "/terms", "dest": "/app/terms.html" },
+    { "src": "/(.*)", "dest": "/app/$1" }
   ]
 }
