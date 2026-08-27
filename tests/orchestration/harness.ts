@@ -27,6 +27,7 @@ import type { OrchestratorDependencies, OrchestratorTurn } from '../../ai/orches
 import { DeterministicNLUProvider } from '../../ai/providers/DeterministicNLUProvider.js';
 import type { AIProvider } from '../../ai/index.js';
 import { createProductionToolRegistry } from '../../tools/executors/index.js';
+import { clearStationCacheForTests } from '../../tools/executors/index.js';
 
 export const ASR: Station = { code: 'ASR', name: 'Amritsar Jn', zone: null, state: 'Punjab', latitude: null, longitude: null };
 export const LDH: Station = { code: 'LDH', name: 'Ludhiana Jn', zone: null, state: 'Punjab', latitude: null, longitude: null };
@@ -136,6 +137,7 @@ export type HarnessRouterScript = RouterScript;
 
 /** Fake provider pair with a realistic station-lookup that filters by query. */
 export function createHarness(script: RouterScript = {}) {
+  clearStationCacheForTests(); // fresh provider-call counts per test (station cache is global)
   const calls: Array<{ provider: ProviderId; capability: RailwayCapability }> = [];
 
   const resolve = (capability: RailwayCapability, input: Record<string, unknown>): ProviderResult<unknown> => {

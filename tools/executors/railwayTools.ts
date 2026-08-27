@@ -22,6 +22,7 @@ import type {
   TravelClassCode,
 } from '../../shared/index.js';
 import { isZeroResult } from '../../shared/index.js';
+import type { Station } from '../../shared/index.js';
 import type { ToolCall, ToolResult } from '../../shared/index.js';
 import type { RailwayProviderRouter } from '../../railway/index.js';
 import type { ToolExecutionContext, ToolExecutor } from '../registry.js';
@@ -79,12 +80,81 @@ function numberInput(input: Record<string, unknown>, key: string): number | null
   return typeof value === 'number' && Number.isInteger(value) ? value : null;
 }
 
+/**
+ * STATION LOOKUP CACHE (Step 9+): station codes/names are static railway data,
+ * and station lookup is served by RailCore ONLY (RailKit has no such capability).
+ * Successful RailCore responses are cached server-side with a TTL so repeated
+ * lookups ("Amritsar", "Ludhiana"…) do not burn the provider's daily quota.
+ * Cache stores ONLY real provider responses — nothing is pre-seeded/hardcoded.
+ */
+const STATION_CACHE_TTL_MS = 24 * 60 * 60 * 1000; // stations don't change daily
+const STATION_CACHE_MAX = 300;
+
+interface StationCacheEntry {
+  stations: Station[];
+  source: string;
+  retrievedAt: number;
+  expiresAt: number;
+}
+
+const stationCache = new Map<string, StationCacheEntry>();
+
+function stationCacheKey(query: string): string {
+  return query.trim().toLowerCase();
+}
+
+function readStationCache(key: string, now: number): StationCacheEntry | null {
+  const entry = stationCache.get(key);
+  if (!entry) return null;
+  if (entry.expiresAt < now) {
+    stationCache.delete(key);
+    return null;
+  }
+  return entry;
+}
+
+function writeStationCache(key: string, stations: Station[], source: string, now: number): void {
+  if (stationCache.size >= STATION_CACHE_MAX) {
+    const oldest = stationCache.keys().next().value;
+    if (oldest !== undefined) stationCache.delete(oldest);
+  }
+  stationCache.set(key, { stations, source, retrievedAt: now, expiresAt: now + STATION_CACHE_TTL_MS });
+}
+
+/** Test hook: clears the station cache. */
+export function clearStationCacheForTests(): void {
+  stationCache.clear();
+}
+
 export function createRailwayToolExecutors(router: RailwayProviderRouter): Record<string, ToolExecutor> {
   return {
     lookupStation: async (input, ctx): Promise<ToolResult> => {
       const call = callOf(ctx, 'lookupStation');
       const query: StationLookupQuery = { query: stringInput(input, 'query') ?? '' };
-      return mapResult(call, await router.stationLookup(query));
+      const now = Date.now();
+      const cacheKey = stationCacheKey(query.query);
+
+      // Cache hit → serve the previously VERIFIED RailCore result (no provider call).
+      const cached = readStationCache(cacheKey, now);
+      if (cached) {
+        return {
+          callId: call.id,
+          tool: call.tool,
+          ok: true,
+          data: cached.stations,
+          unavailableReason: null,
+          error: null,
+          executedBy: 'SERVER',
+          provider: cached.source,
+        };
+      }
+
+      const result = await router.stationLookup(query); // RailCore primary (only capability holder)
+      if (result.ok && !isZeroResult(result) && result.data !== null && result.data.length > 0) {
+        writeStationCache(cacheKey, result.data, result.source.toLowerCase(), now);
+        return mapResult(call, result);
+      }
+      return mapResult(call, result); // honest failure/empty — never cached, never fabricated
     },
 
     searchTrains: async (input, ctx): Promise<ToolResult> => {
