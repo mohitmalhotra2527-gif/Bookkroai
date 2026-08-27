@@ -25,8 +25,11 @@ git push -u origin main
 | Sample-question chips | ✅ Chat khulega, sawal auto-type |
 | Chat ke asli jawab | ⚠️ Backend chahiye — Pages sirf static hai |
 
-### Chat ko live karne ke 2 options
-1. **Local server**: `npm install && npm run build && npm start` → phir chat page ke ⚙️ settings mein `localhost` wala URL... actually local server par site kholo hi (`http://localhost:3000`) — sab kaam karega.
-2. **Apna server kahin aur deploy karo** (Render/Railway/VPS): `npm run build && npm start` + `.env` (keys) — phir GitHub Pages wale chat page ke ⚙️ settings mein apna server URL daal do. URL browser mein save hota hai (localStorage).
+### Chat ko live karne ke options
+1. **Local server (testing)**: `npm install && npm run build && npm start` → `http://localhost:3000` par poora app (site + chat dono) chalega.
+2. **Backend host karo (chat ke asli jawab ke liye)** — repo mein Dockerfile ready hai:
+   - **Render.com**: New → Web Service → repo connect → Dockerfile auto-detect → Env Variables mein `.env` ki keys daalo (NVIDIA_API_KEY, NVIDIA_API_KEY_2, NVIDIA_MODEL, RAILCORE_API_KEY, RAILKIT_API_KEY, RAILWAY_PROVIDER). NOTE: Render ab free plan par bhi card verification maangta hai.
+   - **Hugging Face Spaces (card-free)**: New Space → Docker → repo ka code push karo → Space Settings → Secrets mein wahi keys daalo. App port 7860 par sunta hai (Dockerfile set karta hai).
+   - Deploy hone ke baad chat page ke ⚙️ settings mein server URL daalo (ya `app/config.js` mein default set karo) — CORS enabled hai.
 
 > ⚠️ Keys kabhi git commit nahi hui (.gitignore mein `.env` hai) — server par hi `.env` banao.
