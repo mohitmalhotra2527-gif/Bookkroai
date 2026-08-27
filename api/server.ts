@@ -127,6 +127,11 @@ interface HandleDeps {
   aiName: string;
 }
 
+/** Serverless entry point (Vercel adapter reuses this — same routing, same safety). */
+export async function handleRequest(req: IncomingMessage, res: ServerResponse, deps: HandleDeps): Promise<void> {
+  return handle(req, res, deps);
+}
+
 async function handle(req: IncomingMessage, res: ServerResponse, deps: HandleDeps): Promise<void> {
   const method = (req.method ?? 'GET').toUpperCase();
 
@@ -179,7 +184,8 @@ async function handle(req: IncomingMessage, res: ServerResponse, deps: HandleDep
   sendJson(res, 405, { ok: false, code: 'METHOD_NOT_ALLOWED' });
 }
 
-export function createBookKaroServer(options: BookKaroServerOptions = {}) {
+/** Builds the shared request dependencies once (used by both the long-running server and the serverless adapter). */
+export function createHandleDeps(options: BookKaroServerOptions = {}): HandleDeps {
   const diagnostics = createRailwayDiagnostics({
     sink: options.diagnosticsSink ?? ((line) => console.log(redactSecrets(line))),
   });
@@ -203,10 +209,15 @@ export function createBookKaroServer(options: BookKaroServerOptions = {}) {
     };
   const conversations = createInMemoryConversationStore();
   const chatContext = { orchestrator, toolRegistry, conversations };
-  void runAiOrchestrator; // re-exported for the chat route via deps
 
+  return { railwayRouter, chatContext, aiName: activeAi.name };
+}
+
+/** The original long-running server (local / Render / Docker) — same deps, wrapped in node:http. */
+export function createBookKaroServer(options: BookKaroServerOptions = {}) {
+  const deps = createHandleDeps(options);
   return createServer((req, res) => {
-    void handle(req, res, { railwayRouter, chatContext, aiName: activeAi.name }).catch((error: unknown) => {
+    void handle(req, res, deps).catch((error: unknown) => {
       // Never log headers (Authorization!) — scrub message and fail closed.
       console.error(`[${APP_NAME}] request error:`, redactSecrets(String(error)));
       if (!res.headersSent) {
