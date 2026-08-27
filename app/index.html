@@ -3,335 +3,514 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>BookKaro — Baat karo, Train pakdo 🚆</title>
-<meta name="description" content="BookKaro: AI-first Hinglish railway assistant. Live status, fare, availability, PNR — sab natural conversation mein." />
+<title>BookKaro — Train booking? Bas bolo.</title>
+<meta name="description" content="BookKaro: AI-first Hinglish railway assistant. Train search, live status, PNR, fare aur booking — sab natural language mein." />
 <style>
   :root {
-    --bg: #070d1a; --bg2: #0a1322; --panel: #0f1b30; --panel2: #0c1626;
-    --line: #1d2c47; --text: #eaf1ff; --muted: #93a4c8;
-    --saffron: #ff9933; --green: #22c55e; --blue: #4f8cff;
-    --grad: linear-gradient(135deg, #ff9933 0%, #ffb84d 45%, #22c55e 100%);
+    --cream: #FBF7EF; --cream-2: #F5EFE3; --card: #FFFFFF;
+    --ink: #23262E; --ink-2: #3A3E49; --muted: #6E7280; --faint: #9A9EAB;
+    --orange: #EE7A2D; --orange-dark: #D8661B; --orange-soft: #FDEBDC;
+    --teal: #0F766E; --teal-deep: #0B5A54; --teal-soft: #E2F0EE;
+    --line: #EAE3D4; --line-2: #E3DAC8;
+    --shadow: 0 1px 2px rgba(35, 38, 46, .04), 0 12px 32px rgba(35, 38, 46, .07);
+    --shadow-lg: 0 2px 4px rgba(35,38,46,.05), 0 24px 56px rgba(35,38,46,.12);
     --radius: 18px;
   }
   * { box-sizing: border-box; margin: 0; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
-    background:
-      radial-gradient(1100px 500px at 85% -10%, rgba(79, 140, 255, .16), transparent 60%),
-      radial-gradient(900px 500px at -10% 10%, rgba(255, 153, 51, .12), transparent 55%),
-      var(--bg);
-    color: var(--text); line-height: 1.55; overflow-x: hidden;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+    background: var(--cream); color: var(--ink); line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
   }
   a { color: inherit; text-decoration: none; }
-  .wrap { width: min(1120px, 92vw); margin: 0 auto; }
+  .wrap { width: min(1128px, 92vw); margin: 0 auto; }
+  .sec { padding: 72px 0; }
 
-  /* ── nav ── */
-  .nav {
-    position: sticky; top: 0; z-index: 50;
-    backdrop-filter: blur(14px); background: rgba(7, 13, 26, .72);
-    border-bottom: 1px solid var(--line);
+  /* ── header ── */
+  .hd {
+    position: sticky; top: 0; z-index: 60; background: rgba(251, 247, 239, .86);
+    backdrop-filter: blur(12px); border-bottom: 1px solid var(--line);
   }
-  .nav-inner { display: flex; align-items: center; gap: 22px; padding: 14px 0; }
-  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: .2px; }
-  .logo-badge {
-    width: 38px; height: 38px; border-radius: 12px; background: var(--grad);
-    display: grid; place-items: center; font-size: 20px; box-shadow: 0 6px 18px rgba(255, 153, 51, .25);
+  .hd-in { display: flex; align-items: center; gap: 28px; padding: 14px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: -.2px; }
+  .brand-orb {
+    width: 36px; height: 36px; border-radius: 12px; background: var(--orange);
+    display: grid; place-items: center; font-size: 18px; box-shadow: 0 6px 14px rgba(238,122,45,.32);
   }
-  .nav-links { margin-left: auto; display: flex; gap: 20px; align-items: center; font-size: 14.5px; color: var(--muted); }
-  .nav-links a:hover { color: var(--text); }
+  .nav { display: flex; gap: 26px; margin: 0 auto; font-size: 14.5px; color: var(--ink-2); font-weight: 550; }
+  .nav a { position: relative; padding: 4px 0; transition: color .15s; }
+  .nav a:hover { color: var(--orange-dark); }
+  .hd-r { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+  .wallet-link { font-size: 14.5px; font-weight: 550; color: var(--ink-2); }
   .btn {
-    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: 0;
-    font-weight: 700; border-radius: 999px; padding: 11px 20px; font-size: 14.5px;
-    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: 0;
+    font-weight: 700; border-radius: 999px; transition: transform .16s ease, box-shadow .16s ease, background .16s;
+    white-space: nowrap;
   }
   .btn:active { transform: scale(.97); }
-  .btn-primary { background: var(--grad); color: #10131a; box-shadow: 0 8px 24px rgba(255, 153, 51, .28); }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255, 153, 51, .38); }
-  .btn-ghost { background: rgba(79, 140, 255, .12); color: var(--text); border: 1px solid var(--line); }
-  .btn-ghost:hover { background: rgba(79, 140, 255, .2); }
+  .btn-p { background: var(--orange); color: #fff; padding: 11px 22px; font-size: 15px; box-shadow: 0 8px 20px rgba(238,122,45,.28); }
+  .btn-p:hover { background: var(--orange-dark); transform: translateY(-2px); box-shadow: 0 12px 26px rgba(238,122,45,.34); }
+  .btn-s { background: var(--card); color: var(--ink); border: 1.5px solid var(--line-2); padding: 11px 22px; font-size: 15px; }
+  .btn-s:hover { border-color: var(--teal); color: var(--teal-deep); transform: translateY(-2px); }
+  .burger { display: none; background: none; border: 0; font-size: 22px; cursor: pointer; color: var(--ink); padding: 6px; }
+  .m-nav { display: none; }
 
   /* ── hero ── */
-  .hero { padding: 72px 0 30px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 44px; align-items: center; }
+  .hero { padding: 84px 0 40px; display: grid; grid-template-columns: 1.02fr .98fr; gap: 56px; align-items: center; }
   .kicker {
-    display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700;
-    color: var(--saffron); background: rgba(255, 153, 51, .1); border: 1px solid rgba(255, 153, 51, .3);
-    padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; letter-spacing: .4px;
+    display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 800; letter-spacing: 1.4px;
+    color: var(--teal-deep); background: var(--teal-soft); border: 1px solid #CBE2DE;
+    padding: 7px 14px; border-radius: 999px; margin-bottom: 22px;
   }
-  .kicker .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
-  h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.12; font-weight: 900; letter-spacing: -.5px; }
-  h1 .hl { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .sub { color: var(--muted); font-size: 17px; margin: 18px 0 26px; max-width: 52ch; }
-  .sub b { color: var(--text); }
+  .kicker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); animation: pulse 2.4s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  h1 { font-size: clamp(40px, 5.6vw, 62px); line-height: 1.06; font-weight: 900; letter-spacing: -1.6px; }
+  h1 em { font-style: normal; color: var(--orange); }
+  .hero-sub { color: var(--muted); font-size: 17.5px; margin: 22px 0 30px; max-width: 46ch; }
+  .hero-sub b { color: var(--ink); font-weight: 650; }
   .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
-  .trust { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
-  .chip {
-    font-size: 12.5px; color: var(--muted); border: 1px solid var(--line);
-    background: var(--panel2); padding: 6px 12px; border-radius: 999px;
+  .cta-row .btn-p, .cta-row .btn-s { padding: 14px 28px; font-size: 16px; }
+
+  /* ── AI visual ── */
+  .stage { position: relative; }
+  .stage-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 26px; box-shadow: var(--shadow-lg);
+    padding: 20px 20px 16px; position: relative; animation: floaty 7s ease-in-out infinite;
   }
-  .chip b { color: var(--green); }
-
-  /* phone mockup */
-  .phone {
-    border: 1px solid var(--line); border-radius: 26px; background: linear-gradient(180deg, var(--panel), var(--panel2));
-    box-shadow: 0 30px 60px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .05);
-    padding: 16px; max-width: 420px; margin-left: auto; position: relative;
-    animation: floaty 6s ease-in-out infinite;
+  @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+  .sc-head { display: flex; align-items: center; gap: 10px; padding: 2px 4px 14px; border-bottom: 1px solid var(--line); }
+  .sc-ava {
+    width: 38px; height: 38px; border-radius: 13px; background: linear-gradient(140deg, var(--orange), #F5A623);
+    display: grid; place-items: center; font-size: 19px; box-shadow: 0 6px 14px rgba(238,122,45,.3);
   }
-  @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-  .phone-head { display: flex; align-items: center; gap: 8px; padding: 4px 6px 12px; border-bottom: 1px solid var(--line); }
-  .phone-head .t { font-size: 13.5px; font-weight: 700; }
-  .phone-head .s { font-size: 11px; color: var(--green); }
-  .phone-body { padding: 14px 6px 6px; display: flex; flex-direction: column; gap: 10px; }
-  .bub { max-width: 86%; padding: 10px 13px; border-radius: 15px; font-size: 13.5px; }
-  .bub.u { align-self: flex-end; background: var(--blue); color: #fff; border-bottom-right-radius: 5px; }
-  .bub.b { align-self: flex-start; background: var(--bg2); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
-  .mini-card { align-self: flex-start; width: 92%; border: 1px solid var(--line); border-radius: 13px; padding: 10px 12px; background: var(--bg2); }
-  .mini-card .r1 { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
-  .mini-card .no { color: var(--saffron); font-weight: 800; }
-  .mini-card .r2 { display: flex; gap: 14px; margin-top: 6px; font-size: 12px; color: var(--muted); }
-  .mini-card .r2 b { color: var(--text); }
-  .typing { align-self: flex-start; display: flex; gap: 5px; padding: 11px 14px; background: var(--bg2); border: 1px solid var(--line); border-radius: 15px; }
-  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
-  .typing i:nth-child(2) { animation-delay: .18s; } .typing i:nth-child(3) { animation-delay: .36s; }
-  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  .sc-name { font-weight: 750; font-size: 14.5px; line-height: 1.25; }
+  .sc-name .sub { font-size: 11px; color: var(--teal); font-weight: 650; display: block; }
+  .sc-msgs { padding: 16px 4px 8px; display: flex; flex-direction: column; gap: 10px; min-height: 236px; }
+  .bub { max-width: 82%; padding: 10px 14px; border-radius: 15px; font-size: 13.8px; line-height: 1.45; opacity: 0; animation: pop .5s ease forwards; }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.97); } to { opacity: 1; transform: none; } }
+  .bub.u { align-self: flex-end; background: var(--ink); color: #fff; border-bottom-right-radius: 5px; animation-delay: .3s; }
+  .bub.b { align-self: flex-start; background: var(--cream-2); border: 1px solid var(--line-2); border-bottom-left-radius: 5px; animation-delay: 1s; }
+  .bub.u2 { animation-delay: 1.7s; } .bub.b2 { animation-delay: 2.4s; }
+  .bub .mic-on { color: #F5A623; }
 
-  /* train strip */
-  .track { position: relative; height: 74px; margin: 26px 0 8px; overflow: hidden; }
-  .rail { position: absolute; left: 0; right: 0; bottom: 26px; height: 3px; background: repeating-linear-gradient(90deg, var(--line) 0 26px, transparent 26px 40px); border-radius: 2px; }
-  .train { position: absolute; bottom: 22px; left: -140px; display: flex; gap: 6px; animation: ride 13s linear infinite; }
-  @keyframes ride { to { transform: translateX(calc(100vw + 300px)); } }
-  .train .car { width: 44px; height: 26px; border-radius: 7px; background: var(--grad); opacity: .9; box-shadow: 0 6px 14px rgba(255, 153, 51, .2); }
-  .train .car:nth-child(2) { background: var(--blue); }
-  .train .car:nth-child(3) { background: var(--green); }
-  .smoke { position: absolute; bottom: 24px; left: -60px; width: 8px; height: 8px; border-radius: 50%; background: rgba(147, 164, 200, .5); animation: ride 13s linear infinite, puff 1.6s ease-in-out infinite; }
-  @keyframes puff { 50% { transform: translateY(-12px) scale(1.4); opacity: .4; } }
-
-  /* stats strip */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 34px 0 0; }
-  .stat { border: 1px solid var(--line); background: var(--panel2); border-radius: var(--radius); padding: 16px; text-align: center; }
-  .stat .n { font-size: 24px; font-weight: 900; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .stat .l { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  /* sections */
-  section.block { padding: 64px 0 12px; }
-  .sec-head { text-align: center; margin-bottom: 34px; }
-  .sec-head h2 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 900; letter-spacing: -.3px; }
-  .sec-head p { color: var(--muted); margin-top: 8px; font-size: 15px; }
-  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .card {
-    border: 1px solid var(--line); border-radius: var(--radius); padding: 22px;
-    background: linear-gradient(180deg, var(--panel), var(--panel2));
-    transition: transform .18s ease, border-color .18s ease;
+  /* route strip */
+  .route { margin: 10px 4px 2px; padding: 12px 10px 10px; border-top: 1px dashed var(--line-2); }
+  .route-svg { width: 100%; height: 44px; display: block; }
+  .rt-label { font-size: 10.5px; font-weight: 750; letter-spacing: 1px; fill: var(--faint); }
+  .rt-city { font-size: 12px; font-weight: 750; fill: var(--ink); }
+  .rt-track { stroke: var(--line-2); stroke-width: 3; stroke-linecap: round; }
+  .rt-live { stroke: var(--orange); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 8 10; animation: dashmove 1.4s linear infinite; }
+  @keyframes dashmove { to { stroke-dashoffset: -18; } }
+  .rt-train { animation: ride 4.5s ease-in-out infinite alternate; }
+  @keyframes ride { from { transform: translateX(0); } to { transform: translateX(198px); } }
+  .float-chip {
+    position: absolute; background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    box-shadow: var(--shadow); font-size: 12px; font-weight: 700; padding: 8px 14px; color: var(--ink-2);
+    display: flex; align-items: center; gap: 7px;
   }
-  .card:hover { transform: translateY(-4px); border-color: rgba(255, 153, 51, .45); }
-  .card .ico { font-size: 26px; margin-bottom: 12px; }
-  .card h3 { font-size: 16.5px; margin-bottom: 6px; }
-  .card p { color: var(--muted); font-size: 13.8px; }
-  .num { width: 34px; height: 34px; border-radius: 50%; background: var(--grad); color: #10131a; font-weight: 900; display: grid; place-items: center; margin-bottom: 14px; }
+  .chip-a { top: -14px; right: 22px; color: var(--teal-deep); animation: floaty 6s ease-in-out infinite; }
+  .chip-b { bottom: -14px; left: 26px; animation: floaty 6s ease-in-out 1.2s infinite; }
+  .float-chip .ic { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
 
-  /* sample chips */
-  .samples { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-  .sample {
-    border: 1px solid var(--line); background: var(--panel2); color: var(--text);
-    border-radius: 999px; padding: 10px 16px; font-size: 13.5px; cursor: pointer;
-    transition: all .15s ease;
+  /* ── quick actions ── */
+  .sec-title { text-align: center; margin-bottom: 34px; }
+  .sec-title h2 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 850; letter-spacing: -.8px; }
+  .sec-title p { color: var(--muted); margin-top: 8px; font-size: 15.5px; }
+  .qa-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .qa {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 20px;
+    display: flex; flex-direction: column; gap: 8px; box-shadow: var(--shadow);
+    transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
-  .sample:hover { border-color: var(--green); background: rgba(34, 197, 94, .08); transform: translateY(-2px); }
+  .qa:hover { transform: translateY(-5px); border-color: var(--orange); box-shadow: var(--shadow-lg); }
+  .qa .ic { font-size: 25px; }
+  .qa b { font-size: 15.5px; font-weight: 750; }
+  .qa span { color: var(--muted); font-size: 13.2px; }
+  .qa .go { margin-top: 6px; font-size: 12.5px; font-weight: 750; color: var(--orange-dark); }
 
-  /* safety */
-  .safe-card { border-left: 3px solid var(--green); }
-  .safe-card .tag { font-size: 11px; font-weight: 800; color: var(--green); letter-spacing: .8px; text-transform: uppercase; }
-
-  /* CTA banner */
-  .banner {
-    margin: 60px 0 10px; border-radius: 24px; padding: 44px 36px; text-align: center; position: relative; overflow: hidden;
-    background: linear-gradient(135deg, rgba(255, 153, 51, .14), rgba(34, 197, 94, .12)), var(--panel);
-    border: 1px solid var(--line);
+  /* ── chat entry ── */
+  .ask {
+    background: linear-gradient(180deg, var(--teal-soft), var(--cream)); border: 1px solid #D4E6E3;
+    border-radius: 24px; padding: 44px 32px; text-align: center;
   }
-  .banner h2 { font-size: clamp(22px, 3.2vw, 30px); font-weight: 900; }
-  .banner p { color: var(--muted); margin: 10px 0 22px; }
+  .ask h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 850; letter-spacing: -.5px; }
+  .ask p { color: var(--muted); margin: 8px 0 24px; font-size: 14.5px; }
+  .ask-bar {
+    max-width: 620px; margin: 0 auto; display: flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1.5px solid var(--line-2); border-radius: 999px;
+    padding: 8px 8px 8px 20px; box-shadow: var(--shadow-lg); transition: border-color .2s;
+  }
+  .ask-bar:focus-within { border-color: var(--orange); }
+  .ask-bar input { flex: 1; border: 0; outline: none; font-size: 15.5px; background: none; color: var(--ink); min-width: 0; }
+  .ask-bar input::placeholder { color: var(--faint); }
+  .mic {
+    flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--line-2);
+    background: var(--cream); font-size: 17px; cursor: pointer; display: grid; place-items: center;
+    transition: all .18s; color: var(--ink-2);
+  }
+  .mic:hover { border-color: var(--teal); background: var(--teal-soft); }
+  .mic.rec { background: var(--orange); border-color: var(--orange); color: #fff; animation: pulse 1.2s infinite; }
+  .send {
+    flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%; border: 0; background: var(--orange);
+    color: #fff; font-size: 16px; cursor: pointer; display: grid; place-items: center;
+    transition: transform .15s, background .15s;
+  }
+  .send:hover { background: var(--orange-dark); transform: scale(1.06); }
+  .ask .try { font-size: 13px; color: var(--muted); margin-top: 16px; }
+  .ask .try a { color: var(--teal-deep); font-weight: 700; border-bottom: 1.5px dashed #B9D6D2; cursor: pointer; }
 
-  footer { border-top: 1px solid var(--line); margin-top: 60px; padding: 28px 0 34px; color: var(--muted); font-size: 12.5px; }
-  .foot { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: center; }
+  /* ── trust ── */
+  .trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 34px; padding: 4px 0; }
+  .trust div { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--ink-2); font-weight: 550; }
+  .trust svg { flex: 0 0 auto; }
 
-  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  /* ── how ── */
+  .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 34px; }
+  .how { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px 24px; box-shadow: var(--shadow); }
+  .how .num {
+    width: 38px; height: 38px; border-radius: 12px; background: var(--orange-soft); color: var(--orange-dark);
+    font-weight: 850; font-size: 14px; display: grid; place-items: center; margin-bottom: 16px;
+  }
+  .how b { font-size: 16.5px; display: block; margin-bottom: 6px; }
+  .how p { color: var(--muted); font-size: 13.8px; }
+  .flow { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .flow .fstep {
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 11px 22px;
+    font-size: 13.5px; font-weight: 800; letter-spacing: .4px; box-shadow: var(--shadow);
+  }
+  .flow .f1 { color: var(--ink); } .flow .f2 { color: var(--orange-dark); border-color: #F4C9A8; } .flow .f3 { color: var(--teal-deep); border-color: #C4DDD9; }
+  .flow .arr { color: var(--faint); font-size: 18px; }
+
+  /* ── features ── */
+  .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .feat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); transition: transform .18s ease, border-color .18s ease; }
+  .feat:hover { transform: translateY(-4px); border-color: var(--teal); }
+  .feat .ic {
+    width: 42px; height: 42px; border-radius: 13px; background: var(--teal-soft); font-size: 20px;
+    display: grid; place-items: center; margin-bottom: 14px;
+  }
+  .feat:nth-child(2n) .ic { background: var(--orange-soft); }
+  .feat b { font-size: 15.8px; display: block; margin-bottom: 6px; }
+  .feat p { color: var(--muted); font-size: 13.6px; }
+
+  /* ── final CTA ── */
+  .final {
+    background: linear-gradient(150deg, var(--teal-deep), var(--teal)); border-radius: 28px;
+    padding: 58px 36px; text-align: center; color: #fff; position: relative; overflow: hidden;
+  }
+  .final::after {
+    content: ''; position: absolute; right: -70px; top: -70px; width: 230px; height: 230px; border-radius: 50%;
+    background: rgba(255, 255, 255, .07);
+  }
+  .final h2 { font-size: clamp(24px, 3.4vw, 32px); font-weight: 850; letter-spacing: -.6px; }
+  .final .sub2 { opacity: .85; font-size: clamp(17px, 2.4vw, 21px); font-weight: 650; margin-top: 8px; }
+  .final .btn { margin-top: 26px; background: #fff; color: var(--teal-deep); padding: 14px 30px; font-size: 16px; }
+  .final .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,.22); }
+
+  /* ── footer ── */
+  footer { border-top: 1px solid var(--line); padding: 34px 0 40px; }
+  .ft { display: flex; flex-wrap: wrap; gap: 22px; align-items: center; justify-content: space-between; }
+  .ft-links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13.5px; color: var(--ink-2); }
+  .ft-links a:hover { color: var(--orange-dark); }
+  .ft-note { width: 100%; font-size: 12px; color: var(--faint); margin-top: 8px; }
+
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
   .reveal.in { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } .bub { opacity: 1; } }
 
+  /* ── responsive ── */
+  @media (max-width: 1020px) {
+    .nav { display: none; }
+    .hd-r .wallet-link { display: none; }
+    .burger { display: block; margin-left: auto; }
+    .hd-r { margin-left: 0; }
+    .m-nav { display: none; flex-direction: column; gap: 4px; padding: 8px 0 14px; border-top: 1px solid var(--line); }
+    .m-nav.open { display: flex; }
+    .m-nav a { padding: 11px 12px; border-radius: 12px; font-weight: 600; font-size: 15px; color: var(--ink-2); }
+    .m-nav a:hover { background: var(--cream-2); }
+  }
   @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; padding-top: 44px; }
-    .phone { margin: 0 auto; }
-    .grid3 { grid-template-columns: 1fr; }
-    .stats { grid-template-columns: repeat(2, 1fr); }
-    .nav-links a.hide-m { display: none; }
+    .sec { padding: 56px 0; }
+    .hero { grid-template-columns: 1fr; gap: 36px; padding: 48px 0 32px; }
+    .stage { order: -1; max-width: 460px; margin: 0 auto; width: 100%; }
+    .qa-grid { grid-template-columns: repeat(2, 1fr); }
+    .how-grid, .feat-grid { grid-template-columns: 1fr; }
+    .ask { padding: 34px 18px; }
+    .ask-bar { padding-left: 16px; }
+  }
+  @media (max-width: 540px) {
+    .qa-grid { grid-template-columns: 1fr; }
+    .cta-row .btn { width: 100%; }
+    h1 { letter-spacing: -1px; }
   }
 </style>
-<script>
-  // Canvas-drawn favicon: zero external resources (works fully offline).
-  (function () {
-    try {
-      var c = document.createElement('canvas'); c.width = 64; c.height = 64;
-      var x = c.getContext('2d');
-      x.font = '50px serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
-      x.fillText('\u{1F686}', 32, 36);
-      var l = document.createElement('link'); l.rel = 'icon'; l.href = c.toDataURL('image/png');
-      document.head.appendChild(l);
-    } catch (e) {}
-  })();
-</script>
 </head>
 <body>
 
-<header class="nav">
-  <div class="wrap nav-inner">
-    <div class="logo"><span class="logo-badge">🚆</span> BookKaro</div>
-    <nav class="nav-links">
-      <a class="hide-m" href="#features">Features</a>
-      <a class="hide-m" href="#how">Kaise kaam karta hai</a>
-      <a class="hide-m" href="#safety">Safety</a>
-      <a class="btn btn-primary" href="chat.html">💬 Chat kholo</a>
+<header class="hd">
+  <div class="wrap">
+    <div class="hd-in">
+      <a class="brand" href="/"><span class="brand-orb">🚆</span>BookKaro</a>
+      <nav class="nav" aria-label="Main">
+        <a href="/">Home</a>
+        <a href="chat.html?q=12014%20ka%20live%20status%20batao">Live Status</a>
+        <a href="chat.html?q=Mera%20PNR%20check%20karo">PNR Status</a>
+        <a href="chat.html?q=Meri%20ticket%20history%20dikhao">My Bookings</a>
+      </nav>
+      <div class="hd-r">
+        <a class="wallet-link" href="chat.html?q=Mera%20wallet%20batao">Wallet</a>
+        <a class="btn btn-p" href="chat.html">Get Started</a>
+        <button class="burger" id="burger" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+      </div>
+    </div>
+    <nav class="m-nav" id="mnav" aria-label="Mobile">
+      <a href="/">Home</a>
+      <a href="chat.html?q=12014%20ka%20live%20status%20batao">📍 Live Status</a>
+      <a href="chat.html?q=Mera%20PNR%20check%20karo">🎫 PNR Status</a>
+      <a href="chat.html?q=Meri%20ticket%20history%20dikhao">🧾 My Bookings</a>
+      <a href="chat.html?q=Mera%20wallet%20batao">💰 Wallet</a>
+      <a href="chat.html">💬 Start Chatting</a>
     </nav>
   </div>
 </header>
 
-<div class="wrap">
+<main>
   <!-- ── HERO ── -->
-  <section class="hero">
+  <section class="wrap hero">
     <div>
-      <span class="kicker"><span class="dot"></span> AI-FIRST RAILWAY ASSISTANT · LIVE</span>
-      <h1>Train booking, ab<br /><span class="hl">baat-cheet</span> se ho jayegi.</h1>
-      <p class="sub">
-        Forms bhool jao. BookKaro se seedha poochho —
-        <b>"Kal Amritsar se Delhi 2 ticket chahiye"</b>.
-        Live status, fare, availability, PNR, cancelled trains — sab natural
-        Hinglish conversation mein, <b>real railway data</b> ke saath.
+      <span class="kicker"><span class="dot"></span>YOUR AI RAILWAY ASSISTANT</span>
+      <h1>Train booking?<br /><em>Bas bolo.</em></h1>
+      <p class="hero-sub">
+        BookKaro se <b>train search, live status, PNR, fare aur booking</b> —
+        sab natural language mein. Na forms, na confusion.
       </p>
       <div class="cta-row">
-        <a class="btn btn-primary" href="chat.html">🚆 Chat shuru karein</a>
-        <a class="btn btn-ghost" href="#how">Kaise kaam karta hai ↓</a>
-      </div>
-      <div class="trust">
-        <span class="chip"><b>✓</b> Sirf verified provider data</span>
-        <span class="chip"><b>✓</b> 500+ automated tests</span>
-        <span class="chip">Hinglish • हिंदी • English</span>
+        <a class="btn btn-p" href="chat.html">💬 Start Chatting</a>
+        <a class="btn btn-s" href="chat.html?q=Mujhe%20Amritsar%20se%20Delhi%20jaana%20hai">🔍 Search Trains</a>
       </div>
     </div>
 
-    <div class="phone" aria-hidden="true">
-      <div class="phone-head">
-        <span>🚆</span>
-        <div><div class="t">BookKaro Assistant</div><div class="s">● online</div></div>
-      </div>
-      <div class="phone-body">
-        <div class="bub u">Mujhe Amritsar se Ludhiana jaana hai</div>
-        <div class="bub b">Kis date ko jaana hai? 😊</div>
-        <div class="bub u">Kal, 2 ticket chahiye</div>
-        <div class="mini-card">
-          <div class="r1"><span class="no">12014</span> Amritsar Shatabdi</div>
-          <div class="r2"><span>Dep <b>05:00</b></span><span>Arr <b>06:55</b></span><span>1h 55m</span><span>CC / EC</span></div>
+    <!-- AI assistant visual -->
+    <div class="stage" aria-hidden="true">
+      <div class="stage-card">
+        <div class="sc-head">
+          <div class="sc-ava">🤖</div>
+          <div class="sc-name">BookKaro AI<span class="sub">● online · Hinglish ready</span></div>
         </div>
-        <div class="typing"><i></i><i></i><i></i></div>
+        <div class="sc-msgs">
+          <div class="bub u">Kal Amritsar se Delhi jaana hai</div>
+          <div class="bub b">Bilkul! Kitne passengers hain? 😊</div>
+          <div class="bub u u2">2 ticket <span class="mic-on">🎙</span></div>
+          <div class="bub b b2">Trains check kar rahi hoon…</div>
+        </div>
+        <div class="route">
+          <svg class="route-svg" viewBox="0 0 340 44" role="img">
+            <text class="rt-label" x="6" y="12">ROUTE</text>
+            <line class="rt-track" x1="26" y1="30" x2="314" y2="30"></line>
+            <line class="rt-live" x1="26" y1="30" x2="314" y2="30"></line>
+            <circle cx="26" cy="30" r="6" fill="#0F766E"></circle>
+            <circle cx="314" cy="30" r="6" fill="#EE7A2D"></circle>
+            <g class="rt-train">
+              <rect x="46" y="18" width="34" height="15" rx="5" fill="#EE7A2D"></rect>
+              <rect x="84" y="21" width="26" height="12" rx="4" fill="#0F766E" opacity=".85"></rect>
+            </g>
+            <text class="rt-city" x="38" y="10">Amritsar</text>
+            <text class="rt-city" x="282" y="10">Delhi</text>
+          </svg>
+        </div>
+      </div>
+      <div class="float-chip chip-a"><span class="ic"></span>AI samjha aapki baat</div>
+      <div class="float-chip chip-b"><span class="ic"></span>Verified railway data</div>
+    </div>
+  </section>
+
+  <!-- ── QUICK ACTIONS ── -->
+  <section class="sec" id="quick">
+    <div class="wrap">
+      <div class="sec-title reveal">
+        <h2>Quick actions</h2>
+        <p>Sab kuch chat se hi hota hai — bas shuru karo.</p>
+      </div>
+      <div class="qa-grid reveal">
+        <a class="qa" href="chat.html?q=Mujhe%20Amritsar%20se%20Delhi%20jaana%20hai">
+          <span class="ic">🚆</span><b>Search Trains</b><span>Find trains between stations</span><span class="go">Poochho →</span>
+        </a>
+        <a class="qa" href="chat.html?q=12014%20ka%20live%20status%20batao">
+          <span class="ic">📍</span><b>Live Train Status</b><span>Track your train</span><span class="go">Track →</span>
+        </a>
+        <a class="qa" href="chat.html?q=Mera%20PNR%20check%20karo">
+          <span class="ic">🎫</span><b>PNR Status</b><span>Check your booking</span><span class="go">Check →</span>
+        </a>
+        <a class="qa" href="chat.html?q=12014%20ka%20fare%20aur%20CC%20availability%20batao">
+          <span class="ic">💰</span><b>Fare &amp; Availability</b><span>Check fare and seats</span><span class="go">Dekho →</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- train strip -->
-  <div class="track" aria-hidden="true">
-    <div class="smoke"></div>
-    <div class="train"><div class="car"></div><div class="car"></div><div class="car"></div></div>
-    <div class="rail"></div>
-  </div>
+  <!-- ── CONVERSATIONAL ENTRY ── -->
+  <section class="sec" style="padding-top: 8px;">
+    <div class="wrap">
+      <div class="ask reveal">
+        <h2>BookKaro se kuch bhi poochho…</h2>
+        <p>Jaise dost se baat karte ho — waise likho ya bolo.</p>
+        <form class="ask-bar" id="ask-form">
+          <input id="ask-input" type="text" placeholder="BookKaro se kuch bhi poochho…" autocomplete="off" aria-label="BookKaro se poochho" />
+          <button class="mic" id="mic-btn" type="button" aria-label="Bolkar poochho" title="Bolkar poochho" hidden>🎙</button>
+          <button class="send" type="submit" aria-label="Send" title="Send">➤</button>
+        </form>
+        <p class="try">Try: <a href="chat.html?q=Kal%20Amritsar%20se%20Delhi%20ki%20trains%20dikhao">“Kal Amritsar se Delhi ki trains dikhao”</a></p>
+      </div>
+    </div>
+  </section>
 
-  <div class="stats reveal">
-    <div class="stat"><div class="n">2</div><div class="l">Railway data providers (primary + fallback)</div></div>
-    <div class="stat"><div class="n">18</div><div class="l">Approved AI tools</div></div>
-    <div class="stat"><div class="n">500+</div><div class="l">Automated tests</div></div>
-    <div class="stat"><div class="n">0</div><div class="l">Fabricated facts — sirf real data</div></div>
-  </div>
+  <!-- ── TRUST ── -->
+  <section class="sec" style="padding: 34px 0;">
+    <div class="wrap trust reveal">
+      <div><svg width="17" height="17" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#E2F0EE"/><path d="M6 10.5l2.6 2.6L14 7.7" stroke="#0F766E" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Live railway data</div>
+      <div><svg width="17" height="17" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#FDEBDC"/><path d="M6 10.5l2.6 2.6L14 7.7" stroke="#D8661B" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Smart AI assistance</div>
+      <div><svg width="17" height="17" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#E2F0EE"/><path d="M6 10.5l2.6 2.6L14 7.7" stroke="#0F766E" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Secure booking flow</div>
+      <div><svg width="17" height="17" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#FDEBDC"/><path d="M6 10.5l2.6 2.6L14 7.7" stroke="#D8661B" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Clear fare information</div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ── -->
+  <section class="sec" id="how" style="padding-top: 48px;">
+    <div class="wrap">
+      <div class="sec-title reveal">
+        <h2>Kaise kaam karta hai?</h2>
+        <p>Teen step. Bas.</p>
+      </div>
+      <div class="how-grid reveal">
+        <div class="how"><div class="num">01</div><b>Bas bolo</b><p>BookKaro ko batao kya chahiye — apni bhasha mein, Hinglish mein, jaise mann kare.</p></div>
+        <div class="how"><div class="num">02</div><b>BookKaro samjhega</b><p>AI aapka request samajhta hai aur sahi railway capability select karta hai.</p></div>
+        <div class="how"><div class="num">03</div><b>Verified answer</b><p>Sahi railway information milti hai — ya booking aage badhti hai, aapke control mein.</p></div>
+      </div>
+      <div class="flow reveal">
+        <span class="fstep f1">YOU</span><span class="arr">→</span>
+        <span class="fstep f2">BOOKKARO AI</span><span class="arr">→</span>
+        <span class="fstep f3">RAILWAY RESULT</span>
+      </div>
+    </div>
+  </section>
 
   <!-- ── FEATURES ── -->
-  <section class="block reveal" id="features">
-    <div class="sec-head">
-      <h2>Sab kuch ek chat mein</h2>
-      <p>App switch karne ki zaroorat nahi — bas poochho.</p>
-    </div>
-    <div class="grid3">
-      <div class="card"><div class="ico">📍</div><h3>Live Train Status</h3><p>"12014 abhi kaha hai?" — current location, delay aur next station, seedha provider se.</p></div>
-      <div class="card"><div class="ico">🔍</div><h3>Smart Train Search</h3><p>"Kal Amritsar se Delhi ki trains" — beautiful cards mein real timings, duration aur classes.</p></div>
-      <div class="card"><div class="ico">💺</div><h3>Availability & Fare</h3><p>"CC mein seat hai?" — live availability aur transparent fare (railway fare + fee alag-alag).</p></div>
-      <div class="card"><div class="ico">🎫</div><h3>PNR & Bookings</h3><p>"Mera PNR check karo" — status, coach, berth. Apni booking history bhi ek line mein.</p></div>
-      <div class="card"><div class="ico">⚖️</div><h3>Train Comparison</h3><p>"12014 aur 14542 mein kaunsi jaldi pahunchti hai?" — verified data se deterministic compare.</p></div>
-      <div class="card"><div class="ico">🛡️</div><h3>Safety First</h3><p>Booking sirf aapki explicit confirmation ke baad. Paise ka kaam server-side deterministic code karta hai.</p></div>
-    </div>
-  </section>
-
-  <!-- ── HOW ── -->
-  <section class="block reveal" id="how">
-    <div class="sec-head">
-      <h2>Kaise kaam karta hai?</h2>
-      <p>AI samajhti hai — par facts hamesha real providers se aate hain.</p>
-    </div>
-    <div class="grid3">
-      <div class="card"><div class="num">1</div><h3>Aap poochho</h3><p>Koi form nahi, koi menu nahi. Hinglish, Hindi ya English — jaise dost se baat karte ho.</p></div>
-      <div class="card"><div class="num">2</div><h3>AI tool chunti hai</h3><p>Assistant samajhta hai ki kya chahiye — live status, search, fare — aur approved tool select karta hai. Har request server-side validate hoti hai.</p></div>
-      <div class="card"><div class="num">3</div><h3>Real jawab milta hai</h3><p>Verified railway data ke saath natural Hinglish jawab. Data na mile toh seedha bolta hai — "abhi available nahi". Kabhi andaza nahi.</p></div>
+  <section class="sec" id="features">
+    <div class="wrap">
+      <div class="sec-title reveal">
+        <h2>Ek chat, sab kaam</h2>
+        <p>Sirf wahi jo railway providers provide karte hain — verified, clear.</p>
+      </div>
+      <div class="feat-grid reveal">
+        <div class="feat"><div class="ic">💬</div><b>AI Railway Assistant</b><p>Natural Hinglish mein railway se related sawaal poochho.</p></div>
+        <div class="feat"><div class="ic">🚆</div><b>Train Search</b><p>Route aur date ke basis par trains find karo.</p></div>
+        <div class="feat"><div class="ic">📍</div><b>Live Status</b><p>Train ka current status check karo.</p></div>
+        <div class="feat"><div class="ic">🎫</div><b>PNR</b><p>PNR status quickly check karo.</p></div>
+        <div class="feat"><div class="ic">💰</div><b>Fare &amp; Availability</b><p>Available classes aur verified fare information dekho.</p></div>
+        <div class="feat"><div class="ic">⚖️</div><b>Smart Comparisons</b><p>Available verified train data ke basis par trains compare karo.</p></div>
+      </div>
     </div>
   </section>
 
-  <!-- ── SAMPLES ── -->
-  <section class="block reveal" id="samples">
-    <div class="sec-head">
-      <h2>Ye sab try karo</h2>
-      <p>Click karo — chat khul jayega aur sawal auto-type ho jayega.</p>
-    </div>
-    <div class="samples">
-      <a class="sample" href="chat.html?q=12014%20ka%20live%20status%20batao">📍 12014 ka live status batao</a>
-      <a class="sample" href="chat.html?q=Mujhe%20Amritsar%20se%20Ludhiana%20jaana%20hai">🚆 Mujhe Amritsar se Ludhiana jaana hai</a>
-      <a class="sample" href="chat.html?q=CC%20kya%20hota%20hai%3F">💡 CC kya hota hai?</a>
-      <a class="sample" href="chat.html?q=Kaunsi%20train%20fastest%20hai%3F">⚡ Kaunsi train fastest hai?</a>
-      <a class="sample" href="chat.html?q=Mera%20PNR%20check%20karo">🎫 Mera PNR check karo</a>
-      <a class="sample" href="chat.html?q=aaj%20ki%20cancelled%20trains%20batao">🚫 Aaj ki cancelled trains batao</a>
-      <a class="sample" href="chat.html?q=RAC%20kya%20hota%20hai%3F">🛏️ RAC kya hota hai?</a>
-      <a class="sample" href="chat.html?q=Kal%20kitni%20trains%20hain%3F">🔍 Kal kitni trains hain?</a>
+  <!-- ── FINAL CTA ── -->
+  <section class="sec" style="padding-top: 20px;">
+    <div class="wrap">
+      <div class="final reveal">
+        <h2>Railway ka kaam complicated kyun?</h2>
+        <div class="sub2">Bas BookKaro ko bolo.</div>
+        <a class="btn" href="chat.html">💬 Start Chatting</a>
+      </div>
     </div>
   </section>
-
-  <!-- ── SAFETY ── -->
-  <section class="block reveal" id="safety">
-    <div class="sec-head">
-      <h2>Trust, design se bana hai</h2>
-      <p>AI assistant friendly hai — par safety architecture ke andar hard-coded hai.</p>
-    </div>
-    <div class="grid3">
-      <div class="card safe-card"><div class="tag">No Hallucination</div><h3>Facts = Provider Data</h3><p>Fare, seats, delay, PNR — sirf verified railway providers se. Field missing ho toh honestly "unavailable". AI kabhi number invent nahi karta.</p></div>
-      <div class="card safe-card"><div class="tag">Money Safety</div><h3>Explicit Confirmation</h3><p>Booking tabhi banti hai jab aap khud confirm karo — poori fare review ke baad. "Haan" bolne se pehle review mandatory hai.</p></div>
-      <div class="card safe-card"><div class="tag">Privacy</div><h3>Keys Server-Side</h3><p>Saare API keys sirf secure server par rehte hain — browser, chat aur logs mein kabhi nahi.</p></div>
-    </div>
-  </section>
-
-  <!-- ── CTA ── -->
-  <div class="banner reveal">
-    <h2>Chalo, pehli train dhoondhein? 🚆</h2>
-    <p>Bas apni journey batao — date, station, passengers. BookKaro baaki sambhal lega.</p>
-    <a class="btn btn-primary" href="chat.html">💬 Chat kholo</a>
-  </div>
-</div>
+</main>
 
 <footer>
-  <div class="wrap foot">
-    <div><b style="color:var(--text)">BookKaro</b> · AI-first railway assistant · v0.9</div>
-    <div>Independent project — IRCTC / Indian Railways ka official product nahi. Data verified providers se.</div>
+  <div class="wrap ft">
+    <a class="brand" href="/"><span class="brand-orb">🚆</span>BookKaro</a>
+    <nav class="ft-links" aria-label="Footer">
+      <a href="/">Home</a>
+      <a href="chat.html?q=12014%20ka%20live%20status%20batao">Live Status</a>
+      <a href="chat.html?q=Mera%20PNR%20check%20karo">PNR</a>
+      <a href="chat.html?q=Meri%20ticket%20history%20dikhao">My Bookings</a>
+      <a href="chat.html?q=help">Help</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </nav>
+    <div class="ft-note">BookKaro ek independent AI assistant hai — IRCTC ka official product nahi. Railway information verified providers se aati hai; availability guarantee nahi.</div>
   </div>
 </footer>
 
 <script>
-  // Subtle reveal-on-scroll (no external libs, no network).
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) { if (entry.isIntersecting) entry.target.classList.add('in'); });
-  }, { threshold: 0.12 });
-  document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+  (function () {
+    'use strict';
+
+    // Canvas favicon — zero external resources.
+    try {
+      var c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      var x = c.getContext('2d');
+      x.font = '48px serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText('\\u{1F686}', 32, 36);
+      var l = document.createElement('link'); l.rel = 'icon'; l.href = c.toDataURL('image/png');
+      document.head.appendChild(l);
+    } catch (e) { /* favicon optional */ }
+
+    // Mobile menu
+    var burger = document.getElementById('burger');
+    var mnav = document.getElementById('mnav');
+    if (burger && mnav) {
+      burger.addEventListener('click', function () {
+        var open = mnav.classList.toggle('open');
+        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        burger.textContent = open ? '\\u2715' : '\\u2630';
+      });
+    }
+
+    // Conversational entry → existing chat (nothing executed on this page).
+    var form = document.getElementById('ask-form');
+    var input = document.getElementById('ask-input');
+    function go(text) {
+      var q = (text || '').trim();
+      if (!q) { input && input.focus(); return; }
+      window.location.href = 'chat.html?q=' + encodeURIComponent(q.slice(0, 300));
+    }
+    if (form) form.addEventListener('submit', function (event) { event.preventDefault(); go(input && input.value); });
+
+    // Voice input: browser-native Web Speech API (hidden when unsupported).
+    var micBtn = document.getElementById('mic-btn');
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (micBtn && SR) {
+      micBtn.hidden = false;
+      var recognizing = false;
+      micBtn.addEventListener('click', function () {
+        if (recognizing) return;
+        var rec = new SR();
+        rec.lang = 'hi-IN';
+        rec.interimResults = false;
+        rec.maxAlternatives = 1;
+        recognizing = true;
+        micBtn.classList.add('rec');
+        micBtn.title = 'Sun rahi hoon…';
+        rec.onresult = function (event) {
+          var said = event.results && event.results[0] && event.results[0][0] ? event.results[0][0].transcript : '';
+          if (said) go(said);
+        };
+        rec.onerror = function () { if (input) input.placeholder = 'Voice samajh nahi aaya — likh ke try karein'; };
+        rec.onend = function () { recognizing = false; micBtn.classList.remove('rec'); micBtn.title = 'Bolkar poochho'; };
+        try { rec.start(); } catch (e) { recognizing = false; micBtn.classList.remove('rec'); }
+      });
+    }
+
+    // Subtle reveal-on-scroll
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) en.target.classList.add('in'); });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(function (el) { io.observe(el); });
+    } else {
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    }
+  })();
 </script>
 </body>
 </html>

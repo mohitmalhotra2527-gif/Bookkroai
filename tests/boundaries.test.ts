@@ -18,9 +18,9 @@ function collectSourceFiles(dir: string, extension: string): string[] {
 }
 
 describe('architectural boundary: frontend purity (every page)', () => {
-  const pages = ['app/index.html', 'app/chat.html'].map((rel) => join(projectRoot, rel));
+  const pages = ['app/index.html', 'app/chat.html', 'app/privacy.html', 'app/terms.html'].map((rel) => join(projectRoot, rel));
 
-  it('both UI pages exist', () => {
+  it('all UI pages exist', () => {
     for (const page of pages) expect(existsSync(page), page).toBe(true);
   });
 

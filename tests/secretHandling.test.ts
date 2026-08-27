@@ -117,7 +117,7 @@ describe('no secrets or env access outside the api layer', () => {
   });
 
   it('every frontend page contains no external URLs and no env access (no CDN, no railway APIs)', () => {
-    for (const page of ['app/index.html', 'app/chat.html']) {
+    for (const page of ['app/index.html', 'app/chat.html', 'app/privacy.html', 'app/terms.html']) {
       const html = readProjectFile(page);
       expect(html, `${page} external URL`).not.toMatch(/https?:\/\//);
       expect(html, `${page} process env`).not.toMatch(/process\.env/);
