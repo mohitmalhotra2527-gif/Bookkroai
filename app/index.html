@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BookKaro — Baat karo, Train pakdo 🚆</title>
+<meta name="description" content="BookKaro: AI-first Hinglish railway assistant. Live status, fare, availability, PNR — sab natural conversation mein." />
+<style>
+  :root {
+    --bg: #070d1a; --bg2: #0a1322; --panel: #0f1b30; --panel2: #0c1626;
+    --line: #1d2c47; --text: #eaf1ff; --muted: #93a4c8;
+    --saffron: #ff9933; --green: #22c55e; --blue: #4f8cff;
+    --grad: linear-gradient(135deg, #ff9933 0%, #ffb84d 45%, #22c55e 100%);
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif;
+    background:
+      radial-gradient(1100px 500px at 85% -10%, rgba(79, 140, 255, .16), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(255, 153, 51, .12), transparent 55%),
+      var(--bg);
+    color: var(--text); line-height: 1.55; overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { width: min(1120px, 92vw); margin: 0 auto; }
+
+  /* ── nav ── */
+  .nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px); background: rgba(7, 13, 26, .72);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner { display: flex; align-items: center; gap: 22px; padding: 14px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: .2px; }
+  .logo-badge {
+    width: 38px; height: 38px; border-radius: 12px; background: var(--grad);
+    display: grid; place-items: center; font-size: 20px; box-shadow: 0 6px 18px rgba(255, 153, 51, .25);
+  }
+  .nav-links { margin-left: auto; display: flex; gap: 20px; align-items: center; font-size: 14.5px; color: var(--muted); }
+  .nav-links a:hover { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: 0;
+    font-weight: 700; border-radius: 999px; padding: 11px 20px; font-size: 14.5px;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn-primary { background: var(--grad); color: #10131a; box-shadow: 0 8px 24px rgba(255, 153, 51, .28); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255, 153, 51, .38); }
+  .btn-ghost { background: rgba(79, 140, 255, .12); color: var(--text); border: 1px solid var(--line); }
+  .btn-ghost:hover { background: rgba(79, 140, 255, .2); }
+
+  /* ── hero ── */
+  .hero { padding: 72px 0 30px; display: grid; grid-template-columns: 1.05fr .95fr; gap: 44px; align-items: center; }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700;
+    color: var(--saffron); background: rgba(255, 153, 51, .1); border: 1px solid rgba(255, 153, 51, .3);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 18px; letter-spacing: .4px;
+  }
+  .kicker .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+  h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.12; font-weight: 900; letter-spacing: -.5px; }
+  h1 .hl { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .sub { color: var(--muted); font-size: 17px; margin: 18px 0 26px; max-width: 52ch; }
+  .sub b { color: var(--text); }
+  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .trust { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+  .chip {
+    font-size: 12.5px; color: var(--muted); border: 1px solid var(--line);
+    background: var(--panel2); padding: 6px 12px; border-radius: 999px;
+  }
+  .chip b { color: var(--green); }
+
+  /* phone mockup */
+  .phone {
+    border: 1px solid var(--line); border-radius: 26px; background: linear-gradient(180deg, var(--panel), var(--panel2));
+    box-shadow: 0 30px 60px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .05);
+    padding: 16px; max-width: 420px; margin-left: auto; position: relative;
+    animation: floaty 6s ease-in-out infinite;
+  }
+  @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  .phone-head { display: flex; align-items: center; gap: 8px; padding: 4px 6px 12px; border-bottom: 1px solid var(--line); }
+  .phone-head .t { font-size: 13.5px; font-weight: 700; }
+  .phone-head .s { font-size: 11px; color: var(--green); }
+  .phone-body { padding: 14px 6px 6px; display: flex; flex-direction: column; gap: 10px; }
+  .bub { max-width: 86%; padding: 10px 13px; border-radius: 15px; font-size: 13.5px; }
+  .bub.u { align-self: flex-end; background: var(--blue); color: #fff; border-bottom-right-radius: 5px; }
+  .bub.b { align-self: flex-start; background: var(--bg2); border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+  .mini-card { align-self: flex-start; width: 92%; border: 1px solid var(--line); border-radius: 13px; padding: 10px 12px; background: var(--bg2); }
+  .mini-card .r1 { display: flex; align-items: baseline; gap: 8px; font-size: 13px; }
+  .mini-card .no { color: var(--saffron); font-weight: 800; }
+  .mini-card .r2 { display: flex; gap: 14px; margin-top: 6px; font-size: 12px; color: var(--muted); }
+  .mini-card .r2 b { color: var(--text); }
+  .typing { align-self: flex-start; display: flex; gap: 5px; padding: 11px 14px; background: var(--bg2); border: 1px solid var(--line); border-radius: 15px; }
+  .typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
+  .typing i:nth-child(2) { animation-delay: .18s; } .typing i:nth-child(3) { animation-delay: .36s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+
+  /* train strip */
+  .track { position: relative; height: 74px; margin: 26px 0 8px; overflow: hidden; }
+  .rail { position: absolute; left: 0; right: 0; bottom: 26px; height: 3px; background: repeating-linear-gradient(90deg, var(--line) 0 26px, transparent 26px 40px); border-radius: 2px; }
+  .train { position: absolute; bottom: 22px; left: -140px; display: flex; gap: 6px; animation: ride 13s linear infinite; }
+  @keyframes ride { to { transform: translateX(calc(100vw + 300px)); } }
+  .train .car { width: 44px; height: 26px; border-radius: 7px; background: var(--grad); opacity: .9; box-shadow: 0 6px 14px rgba(255, 153, 51, .2); }
+  .train .car:nth-child(2) { background: var(--blue); }
+  .train .car:nth-child(3) { background: var(--green); }
+  .smoke { position: absolute; bottom: 24px; left: -60px; width: 8px; height: 8px; border-radius: 50%; background: rgba(147, 164, 200, .5); animation: ride 13s linear infinite, puff 1.6s ease-in-out infinite; }
+  @keyframes puff { 50% { transform: translateY(-12px) scale(1.4); opacity: .4; } }
+
+  /* stats strip */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 34px 0 0; }
+  .stat { border: 1px solid var(--line); background: var(--panel2); border-radius: var(--radius); padding: 16px; text-align: center; }
+  .stat .n { font-size: 24px; font-weight: 900; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stat .l { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* sections */
+  section.block { padding: 64px 0 12px; }
+  .sec-head { text-align: center; margin-bottom: 34px; }
+  .sec-head h2 { font-size: clamp(24px, 3.4vw, 34px); font-weight: 900; letter-spacing: -.3px; }
+  .sec-head p { color: var(--muted); margin-top: 8px; font-size: 15px; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card {
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 22px;
+    background: linear-gradient(180deg, var(--panel), var(--panel2));
+    transition: transform .18s ease, border-color .18s ease;
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(255, 153, 51, .45); }
+  .card .ico { font-size: 26px; margin-bottom: 12px; }
+  .card h3 { font-size: 16.5px; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 13.8px; }
+  .num { width: 34px; height: 34px; border-radius: 50%; background: var(--grad); color: #10131a; font-weight: 900; display: grid; place-items: center; margin-bottom: 14px; }
+
+  /* sample chips */
+  .samples { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .sample {
+    border: 1px solid var(--line); background: var(--panel2); color: var(--text);
+    border-radius: 999px; padding: 10px 16px; font-size: 13.5px; cursor: pointer;
+    transition: all .15s ease;
+  }
+  .sample:hover { border-color: var(--green); background: rgba(34, 197, 94, .08); transform: translateY(-2px); }
+
+  /* safety */
+  .safe-card { border-left: 3px solid var(--green); }
+  .safe-card .tag { font-size: 11px; font-weight: 800; color: var(--green); letter-spacing: .8px; text-transform: uppercase; }
+
+  /* CTA banner */
+  .banner {
+    margin: 60px 0 10px; border-radius: 24px; padding: 44px 36px; text-align: center; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, rgba(255, 153, 51, .14), rgba(34, 197, 94, .12)), var(--panel);
+    border: 1px solid var(--line);
+  }
+  .banner h2 { font-size: clamp(22px, 3.2vw, 30px); font-weight: 900; }
+  .banner p { color: var(--muted); margin: 10px 0 22px; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 60px; padding: 28px 0 34px; color: var(--muted); font-size: 12.5px; }
+  .foot { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: center; }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } .reveal { opacity: 1; transform: none; } }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; padding-top: 44px; }
+    .phone { margin: 0 auto; }
+    .grid3 { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .nav-links a.hide-m { display: none; }
+  }
+</style>
+<script>
+  // Canvas-drawn favicon: zero external resources (works fully offline).
+  (function () {
+    try {
+      var c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      var x = c.getContext('2d');
+      x.font = '50px serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillText('\u{1F686}', 32, 36);
+      var l = document.createElement('link'); l.rel = 'icon'; l.href = c.toDataURL('image/png');
+      document.head.appendChild(l);
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="logo-badge">🚆</span> BookKaro</div>
+    <nav class="nav-links">
+      <a class="hide-m" href="#features">Features</a>
+      <a class="hide-m" href="#how">Kaise kaam karta hai</a>
+      <a class="hide-m" href="#safety">Safety</a>
+      <a class="btn btn-primary" href="chat.html">💬 Chat kholo</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div>
+      <span class="kicker"><span class="dot"></span> AI-FIRST RAILWAY ASSISTANT · LIVE</span>
+      <h1>Train booking, ab<br /><span class="hl">baat-cheet</span> se ho jayegi.</h1>
+      <p class="sub">
+        Forms bhool jao. BookKaro se seedha poochho —
+        <b>"Kal Amritsar se Delhi 2 ticket chahiye"</b>.
+        Live status, fare, availability, PNR, cancelled trains — sab natural
+        Hinglish conversation mein, <b>real railway data</b> ke saath.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="chat.html">🚆 Chat shuru karein</a>
+        <a class="btn btn-ghost" href="#how">Kaise kaam karta hai ↓</a>
+      </div>
+      <div class="trust">
+        <span class="chip"><b>✓</b> Sirf verified provider data</span>
+        <span class="chip"><b>✓</b> 500+ automated tests</span>
+        <span class="chip">Hinglish • हिंदी • English</span>
+      </div>
+    </div>
+
+    <div class="phone" aria-hidden="true">
+      <div class="phone-head">
+        <span>🚆</span>
+        <div><div class="t">BookKaro Assistant</div><div class="s">● online</div></div>
+      </div>
+      <div class="phone-body">
+        <div class="bub u">Mujhe Amritsar se Ludhiana jaana hai</div>
+        <div class="bub b">Kis date ko jaana hai? 😊</div>
+        <div class="bub u">Kal, 2 ticket chahiye</div>
+        <div class="mini-card">
+          <div class="r1"><span class="no">12014</span> Amritsar Shatabdi</div>
+          <div class="r2"><span>Dep <b>05:00</b></span><span>Arr <b>06:55</b></span><span>1h 55m</span><span>CC / EC</span></div>
+        </div>
+        <div class="typing"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- train strip -->
+  <div class="track" aria-hidden="true">
+    <div class="smoke"></div>
+    <div class="train"><div class="car"></div><div class="car"></div><div class="car"></div></div>
+    <div class="rail"></div>
+  </div>
+
+  <div class="stats reveal">
+    <div class="stat"><div class="n">2</div><div class="l">Railway data providers (primary + fallback)</div></div>
+    <div class="stat"><div class="n">18</div><div class="l">Approved AI tools</div></div>
+    <div class="stat"><div class="n">500+</div><div class="l">Automated tests</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">Fabricated facts — sirf real data</div></div>
+  </div>
+
+  <!-- ── FEATURES ── -->
+  <section class="block reveal" id="features">
+    <div class="sec-head">
+      <h2>Sab kuch ek chat mein</h2>
+      <p>App switch karne ki zaroorat nahi — bas poochho.</p>
+    </div>
+    <div class="grid3">
+      <div class="card"><div class="ico">📍</div><h3>Live Train Status</h3><p>"12014 abhi kaha hai?" — current location, delay aur next station, seedha provider se.</p></div>
+      <div class="card"><div class="ico">🔍</div><h3>Smart Train Search</h3><p>"Kal Amritsar se Delhi ki trains" — beautiful cards mein real timings, duration aur classes.</p></div>
+      <div class="card"><div class="ico">💺</div><h3>Availability & Fare</h3><p>"CC mein seat hai?" — live availability aur transparent fare (railway fare + fee alag-alag).</p></div>
+      <div class="card"><div class="ico">🎫</div><h3>PNR & Bookings</h3><p>"Mera PNR check karo" — status, coach, berth. Apni booking history bhi ek line mein.</p></div>
+      <div class="card"><div class="ico">⚖️</div><h3>Train Comparison</h3><p>"12014 aur 14542 mein kaunsi jaldi pahunchti hai?" — verified data se deterministic compare.</p></div>
+      <div class="card"><div class="ico">🛡️</div><h3>Safety First</h3><p>Booking sirf aapki explicit confirmation ke baad. Paise ka kaam server-side deterministic code karta hai.</p></div>
+    </div>
+  </section>
+
+  <!-- ── HOW ── -->
+  <section class="block reveal" id="how">
+    <div class="sec-head">
+      <h2>Kaise kaam karta hai?</h2>
+      <p>AI samajhti hai — par facts hamesha real providers se aate hain.</p>
+    </div>
+    <div class="grid3">
+      <div class="card"><div class="num">1</div><h3>Aap poochho</h3><p>Koi form nahi, koi menu nahi. Hinglish, Hindi ya English — jaise dost se baat karte ho.</p></div>
+      <div class="card"><div class="num">2</div><h3>AI tool chunti hai</h3><p>Assistant samajhta hai ki kya chahiye — live status, search, fare — aur approved tool select karta hai. Har request server-side validate hoti hai.</p></div>
+      <div class="card"><div class="num">3</div><h3>Real jawab milta hai</h3><p>Verified railway data ke saath natural Hinglish jawab. Data na mile toh seedha bolta hai — "abhi available nahi". Kabhi andaza nahi.</p></div>
+    </div>
+  </section>
+
+  <!-- ── SAMPLES ── -->
+  <section class="block reveal" id="samples">
+    <div class="sec-head">
+      <h2>Ye sab try karo</h2>
+      <p>Click karo — chat khul jayega aur sawal auto-type ho jayega.</p>
+    </div>
+    <div class="samples">
+      <a class="sample" href="chat.html?q=12014%20ka%20live%20status%20batao">📍 12014 ka live status batao</a>
+      <a class="sample" href="chat.html?q=Mujhe%20Amritsar%20se%20Ludhiana%20jaana%20hai">🚆 Mujhe Amritsar se Ludhiana jaana hai</a>
+      <a class="sample" href="chat.html?q=CC%20kya%20hota%20hai%3F">💡 CC kya hota hai?</a>
+      <a class="sample" href="chat.html?q=Kaunsi%20train%20fastest%20hai%3F">⚡ Kaunsi train fastest hai?</a>
+      <a class="sample" href="chat.html?q=Mera%20PNR%20check%20karo">🎫 Mera PNR check karo</a>
+      <a class="sample" href="chat.html?q=aaj%20ki%20cancelled%20trains%20batao">🚫 Aaj ki cancelled trains batao</a>
+      <a class="sample" href="chat.html?q=RAC%20kya%20hota%20hai%3F">🛏️ RAC kya hota hai?</a>
+      <a class="sample" href="chat.html?q=Kal%20kitni%20trains%20hain%3F">🔍 Kal kitni trains hain?</a>
+    </div>
+  </section>
+
+  <!-- ── SAFETY ── -->
+  <section class="block reveal" id="safety">
+    <div class="sec-head">
+      <h2>Trust, design se bana hai</h2>
+      <p>AI assistant friendly hai — par safety architecture ke andar hard-coded hai.</p>
+    </div>
+    <div class="grid3">
+      <div class="card safe-card"><div class="tag">No Hallucination</div><h3>Facts = Provider Data</h3><p>Fare, seats, delay, PNR — sirf verified railway providers se. Field missing ho toh honestly "unavailable". AI kabhi number invent nahi karta.</p></div>
+      <div class="card safe-card"><div class="tag">Money Safety</div><h3>Explicit Confirmation</h3><p>Booking tabhi banti hai jab aap khud confirm karo — poori fare review ke baad. "Haan" bolne se pehle review mandatory hai.</p></div>
+      <div class="card safe-card"><div class="tag">Privacy</div><h3>Keys Server-Side</h3><p>Saare API keys sirf secure server par rehte hain — browser, chat aur logs mein kabhi nahi.</p></div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <div class="banner reveal">
+    <h2>Chalo, pehli train dhoondhein? 🚆</h2>
+    <p>Bas apni journey batao — date, station, passengers. BookKaro baaki sambhal lega.</p>
+    <a class="btn btn-primary" href="chat.html">💬 Chat kholo</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <div><b style="color:var(--text)">BookKaro</b> · AI-first railway assistant · v0.9</div>
+    <div>Independent project — IRCTC / Indian Railways ka official product nahi. Data verified providers se.</div>
+  </div>
+</footer>
+
+<script>
+  // Subtle reveal-on-scroll (no external libs, no network).
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) { if (entry.isIntersecting) entry.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(function (el) { observer.observe(el); });
+</script>
+</body>
+</html>

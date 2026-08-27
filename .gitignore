@@ -1,0 +1,13 @@
+# dependencies / build output
+node_modules/
+dist/
+coverage/
+
+# secrets — never commit real credentials (.env.example is the safe template)
+.env
+.env.*
+!.env.example
+
+# logs & os noise
+*.log
+.DS_Store
