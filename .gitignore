@@ -16,3 +16,6 @@ coverage/
 
 .vercel/
 .env.local
+.npm/
+.cache/
+.local/
