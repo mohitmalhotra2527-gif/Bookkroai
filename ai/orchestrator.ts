@@ -969,12 +969,30 @@ async function finishJourney(state: TurnState, intent: Intent, usedFallback: boo
   const results = dataOf<TrainSearchResult[]>(searchResult);
   if (results) {
     state.context = setSearchResults(state.context, results, nowIso(state));
+    state.cards = results.slice(0, 6).map(toTrainCard);
+
+    // Single result → auto-select it (user complaint fix): asking "kaunsi leni hai?"
+    // for the ONLY train confuses users into answering the class instead.
+    if (results.length === 1) {
+      const only = results[0]!;
+      state.context = setContextSlots(state.context, { selectedTrain: only.train }, 'FILL_MISSING', nowIso(state));
+      state.context = updateConversationMeta(
+        state.context,
+        { bookingStage: 'TRAIN_SELECTED', lastAskedField: 'selectedClass', pendingQuestion: askForField('selectedClass') },
+        nowIso(state),
+      );
+      const reply = `${searchResultsReply(results, state.context.origin, state.context.destination)}\n\nSirf ek hi train hai — ${only.train.number}${only.train.name ? ` (${only.train.name})` : ''} select kar li. ${askForField('selectedClass')}`;
+      return finish(state, intent, maybeAppendFastestNote(state, reply), {
+        factsFromTools: true,
+        usedFallbackNlu: usedFallback,
+      });
+    }
+
     state.context = updateConversationMeta(
       state.context,
       { bookingStage: 'SEARCH_RESULTS', lastAskedField: 'selectedTrain', pendingQuestion: 'Kaunsi train leni hai?' },
       nowIso(state),
     );
-    state.cards = results.slice(0, 6).map(toTrainCard);
     const baseReply = searchResultsReply(results, state.context.origin, state.context.destination);
     return finish(state, intent, maybeAppendFastestNote(state, baseReply), {
       factsFromTools: true,
@@ -1126,6 +1144,29 @@ async function handleSlotFiller(
       });
     }
     context = setContextSlots(context, askedField === 'origin' ? { origin: resolved.station } : { destination: resolved.station }, 'FILL_MISSING', nowIso(state));
+  } else if (askedField === 'selectedTrain' && (filler.kind === 'travelClass' || filler.kind === 'passengerCount')) {
+    // User answered the NEXT question (class/passengers) while we asked which train.
+    // With exactly ONE verified result the choice is unambiguous → auto-select it
+    // and apply their answer; with several → politely re-ask which train.
+    const results = context.lastSearchResults ?? [];
+    if (results.length === 1) {
+      const only = results[0]!;
+      context = setContextSlots(context, { selectedTrain: only.train }, 'FILL_MISSING', nowIso(state));
+      if (filler.kind === 'travelClass') {
+        context = setContextSlots(context, { selectedClass: String(filler.value).toUpperCase() as never }, 'FILL_MISSING', nowIso(state));
+      } else {
+        context = setContextSlots(context, { passengerCount: Number(filler.value) }, 'FILL_MISSING', nowIso(state));
+      }
+      state.context = context;
+      return continueBookingFlow(state, usedFallback);
+    }
+    state.context = context;
+    return finish(
+      state,
+      'BOOK_TRAIN',
+      `Pehle train select karein — ${results.length} trains mili hain. Train number bataiye ya "pehli wali / doosri wali" bolein.`,
+      { usedFallbackNlu: usedFallback },
+    );
   } else if (askedField === 'selectedTrain' && (filler.kind === 'reference' || u.slots.trainNumber)) {
     state.wasFollowUp = true; // §13: reference resolution is a contextual follow-up
     const results = context.lastSearchResults ?? [];
