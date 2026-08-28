@@ -63,13 +63,13 @@ export function passengerQuestion(field: ContextSlotField, current: number, tota
   const progress = total > 1 ? `Passenger ${current} of ${total} — ` : `Passenger ${current} — `;
   switch (field) {
     case 'passengerName':
-      return `${progress}naam kya hai?`;
+      return `${progress}naam kya hai? (type karein)`;
     case 'passengerAge':
       return `${progress}age kitni hai?`;
     case 'passengerGender':
-      return `${progress}gender? (M / F / T)`;
+      return `${progress}gender? (M / F / T — chip se tap kar sakte hain)`;
     case 'passengerBerth':
-      return `${progress}berth preference? (lower / middle / upper / side / koi nahi)`;
+      return `${progress}berth preference? (lower / middle / upper / side — chip se tap karein)`;
     default:
       return `${progress}detail bataiye?`;
   }

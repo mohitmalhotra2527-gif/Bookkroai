@@ -140,6 +140,7 @@
     transition: all .15s; box-shadow: 0 1px 3px rgba(35,38,46,.05);
   }
   .chip:hover { border-color: var(--orange); background: var(--orange-soft); color: var(--orange-dark); transform: translateY(-2px); }
+  .chip { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .chip:active { transform: scale(.96); }
 
   /* composer */
@@ -407,6 +408,7 @@
         if (data.cards && data.cards.length) addCards(data.cards);
         if (data.panel) addPanel(data.panel);
         addTag(data.intent && data.intent !== 'UNKNOWN' ? data.intent : '');
+        if (window.__refreshChips) window.__refreshChips(String(data.reply || '').split('\n')[0]);
       })
       .catch(function () {
         if (settled) return; settled = true; clearTimeout(timeoutId);
@@ -445,10 +447,23 @@
 
   /* ── wiring ── */
   if (form) form.addEventListener('submit', function (e) { e.preventDefault(); send(input.value); });
+  // Tap-proof chips: pointerdown fires instantly on mobile; click is a deduped fallback.
+  var lastChipAt = 0;
+  var lastChipText = '';
+  function chipTap(el) {
+    if (!el || !el.classList || !el.classList.contains('chip')) return;
+    var now = Date.now();
+    if (el.textContent === lastChipText && now - lastChipAt < 800) return; // dedupe
+    lastChipAt = now; lastChipText = el.textContent || '';
+    el.style.transform = 'scale(.94)';
+    setTimeout(function () { el.style.transform = ''; }, 140);
+    send(el.textContent);
+  }
   var chipsEl = $('chips');
-  if (chipsEl) chipsEl.addEventListener('click', function (e) {
-    if (e.target && e.target.classList && e.target.classList.contains('chip')) send(e.target.textContent);
-  });
+  if (chipsEl) {
+    chipsEl.addEventListener('pointerdown', function (e) { chipTap(e.target); });
+    chipsEl.addEventListener('click', function (e) { chipTap(e.target); });
+  }
   if ($('home')) $('home').addEventListener('click', function () { location.href = 'index.html'; });
   if ($('gear')) $('gear').addEventListener('click', function () { settingsEl.classList.toggle('show'); });
   if (connectBtn) connectBtn.addEventListener('click', function () {
@@ -500,6 +515,46 @@
       try { rec.start(); } catch (err) { busy = false; micBtn.classList.remove('rec'); }
     });
   }
+
+  /* ── dynamic quick-answer chips for the pending question (passenger details etc.) ── */
+  var CHIP_SETS = {
+    gender: ['M', 'F', 'T'],
+    berth: ['lower', 'middle', 'upper', 'side lower', 'side upper', 'koi nahi'],
+    age: ['28', '30', '35', '45', '60'],
+    count: ['1', '2', '3', '4'],
+    yesno: ['haan', 'nahi'],
+    classes: ['SL', '3A', '2A', '1A', 'CC', 'EC', '2S']
+  };
+  function detectChipKind(text) {
+    var t = (text || '').toLowerCase();
+    if (/gender/.test(t)) return 'gender';
+    if (/berth|preference/.test(t)) return 'berth';
+    if (/age kitni|\bage\b/.test(t)) return 'age';
+    if (/kitne passengers|passengerCount/.test(t)) return 'count';
+    if (/confirm/i.test(t)) return 'yesno';
+    if (/class chahiye/.test(t)) return 'classes';
+    return null;
+  }
+  var dynamicWrap = document.createElement('div');
+  dynamicWrap.className = 'chips-wrap';
+  dynamicWrap.id = 'dyn-chips-wrap';
+  dynamicWrap.style.display = 'none';
+  var dynChips = document.createElement('div');
+  dynChips.className = 'chips';
+  dynamicWrap.appendChild(dynChips);
+  document.querySelector('.comp-wrap').parentNode.insertBefore(dynamicWrap, document.querySelector('.comp-wrap'));
+  function refreshDynamicChips(lastBotReply) {
+    var kind = detectChipKind(lastBotReply);
+    if (!kind) { dynamicWrap.style.display = 'none'; dynChips.innerHTML = ''; return; }
+    dynChips.innerHTML = '';
+    (CHIP_SETS[kind] || []).forEach(function (v) {
+      var b = document.createElement('button');
+      b.className = 'chip'; b.type = 'button'; b.textContent = v;
+      dynChips.appendChild(b);
+    });
+    dynamicWrap.style.display = 'block';
+  }
+  window.__refreshChips = refreshDynamicChips;
 
   /* ── ?q= auto question ── */
   try {

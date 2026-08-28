@@ -1476,6 +1476,10 @@ function resolveFollowUp(message: string, context: ConversationContext): FollowU
   const trimmed = message.trim().toLowerCase();
   const words = trimmed.split(/\s+/);
   if (words.length > 5) return null;              // follow-ups are SHORT turns
+  // While PASSENGER DETAILS are being collected, a short reply IS the passenger's
+  // answer (even if it looks like a class like "SL" — passenger may say "sleeper chahiye"
+  // as berth preference). Never divert the flow to fare/availability here.
+  if (isPassengerField(context.lastAskedField)) return null;
   if (/\b\d{4,6}\b/.test(trimmed)) return null;     // explicit train number → normal dispatch
   if (/\d{10}\b/.test(trimmed)) return null;         // PNR → normal dispatch
   if (/\b(se|from|tak|to)\b/.test(trimmed) && words.length > 2) return null; // route phrasing → normal flow
