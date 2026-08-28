@@ -231,15 +231,24 @@ describe('15-18: mid-flow changes (§12)', () => {
     expect(done.context.selectedTrain).toBeNull(); // stale selection gone
   });
 
-  it('17: class change "CC nahi SL" re-checks availability AND fare freshly', async () => {
+  it('17: class change "CC nahi EC" re-checks availability AND fare freshly (offered classes only)', async () => {
     const harness = createHarness();
     const context = await driveTo(harness, 'classChosen');
     const availBefore = harness.countCapability('availability');
     const fareBefore = harness.countCapability('fare');
-    const change = await run(harness, context, 'CC nahi SL');
-    expect(change.context.selectedClass).toBe('SL');
+    const change = await run(harness, context, 'CC nahi EC');
+    expect(change.context.selectedClass).toBe('EC');
     expect(harness.countCapability('availability')).toBe(availBefore + 1); // §34
     expect(harness.countCapability('fare')).toBe(fareBefore + 1);          // §35
+  });
+
+  it('17b: class NOT offered by the train → honest re-ask (never fake availability)', async () => {
+    const harness = createHarness();
+    const context = await driveTo(harness, 'classChosen'); // 12014 offers CC/EC
+    const change = await run(harness, context, 'CC nahi SL');
+    expect(change.context.selectedClass).toBeNull();        // wrong class never set
+    expect(change.reply).toMatch(/SL class available nahi hai.*CC.*EC/i);
+    expect(change.context.lastAskedField).toBe('selectedClass');
   });
 
   it('18: destination change invalidates the whole selection and re-searches (§36)', async () => {
@@ -412,9 +421,9 @@ describe('30/34-36: invention + staleness guards', () => {
   it('34: availability re-checked (never reused) after a train change', async () => {
     const harness = createHarness();
     let context = await driveTo(harness, 'classChosen');
-    context = (await run(harness, context, '12014 nahi 14542')).context;
+    context = (await run(harness, context, '12014 nahi 14542')).context; // 14542 offers SL/3A
     const before = harness.countCapability('availability');
-    const next = await run(harness, context, 'CC');
+    const next = await run(harness, context, 'SL');
     expect(harness.countCapability('availability')).toBe(before + 1);
     expect(next.context.lastAvailability?.status).toBeTruthy();
   });
@@ -424,8 +433,8 @@ describe('30/34-36: invention + staleness guards', () => {
     let context = await driveTo(harness, 'classChosen');
     expect(context.lastFareQuote?.breakdown.totalMinor).toBe(40500);
     const fareCallsBefore = harness.countCapability('fare');
-    context = (await run(harness, context, 'CC nahi SL')).context;
-    expect(context.selectedClass).toBe('SL');
+    context = (await run(harness, context, 'CC nahi EC')).context;
+    expect(context.selectedClass).toBe('EC');
     expect(harness.countCapability('fare')).toBe(fareCallsBefore + 1); // fresh provider quote for the new class
     expect(context.lastFareQuote).not.toBeNull();
   });

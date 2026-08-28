@@ -688,6 +688,25 @@ async function orchestrateSingleTurn(
     return finishJourney(state, 'BOOK_TRAIN', understood.usedFallbackNlu);
   }
 
+    // FIX (user complaint): a SHORT message that directly answers the PENDING asked
+    // field continues the booking flow EVEN IF the model labelled it as a data intent
+    // (e.g. bare "CC" answered as GET_AVAILABILITY). The deterministic state machine
+    // stays authoritative; extraction is literal-only, so nothing is invented.
+    const askedNow = state.context.lastAskedField;
+    const shortAnswer = userMessage.trim().split(/\s+/).length <= 4;
+    const answersAskedField =
+      (askedNow === 'journeyDate' && u.slots.dateText !== null) ||
+      (askedNow === 'passengerCount' && u.slots.passengerCount !== null) ||
+      (askedNow === 'selectedClass' && u.slots.travelClass !== null) ||
+      (askedNow === 'selectedTrain' && (u.slots.trainNumber !== null || u.slots.resultReference !== null)) ||
+      (askedNow !== null && isPassengerField(askedNow));
+    if (shortAnswer && answersAskedField) {
+      const filler = asSlotFiller(u, state.context);
+      if (filler) {
+        return handleSlotFiller(state, u, filler, understood.usedFallbackNlu, userMessage);
+      }
+    }
+
   // Slot-filler turn (bare "kal" / "2" / "CC" / "pehli wali" / bare station)?
   if (u.intent === 'UNKNOWN' || (u.intent === 'BOOK_TRAIN' && isSelectionOrFiller(u, userMessage))) {
     // §24 DATE CORRECTION at turn level: "nahi actually kal nahi parso".
@@ -1167,6 +1186,16 @@ async function continueBookingFlow(state: TurnState, usedFallback: boolean): Pro
   const travelClass = context.selectedClass;
   if (!trainNumber || !from || !to || !journeyDate || !travelClass) {
     return finishJourney(state, 'BOOK_TRAIN', usedFallback);
+  }
+
+  // FIX (user complaint): the chosen class must be one the train VERIFIABLY offers.
+  // Otherwise say so honestly and re-ask — never fake availability for a wrong class.
+  const offered = context.selectedTrain?.travelClasses ?? null;
+  if (offered && offered.length > 0 && !offered.includes(travelClass)) {
+    const question = `${trainNumber} mein ${travelClass} class available nahi hai — is train mein ${offered.join('/')} classes hain. Kaunsi class chahiye?`;
+    state.context = setContextSlots({ ...context, selectedClass: null }, { selectedClass: null }, 'FILL_MISSING', nowIso(state));
+    state.context = updateConversationMeta(state.context, { lastAskedField: 'selectedClass', pendingQuestion: question }, nowIso(state));
+    return finish(state, 'BOOK_TRAIN', question, { usedFallbackNlu: usedFallback });
   }
 
   const replyParts: string[] = [];
@@ -1812,6 +1841,19 @@ async function handleAvailability(state: TurnState, u: AIUnderstandingResult, us
       nowIso(state),
     );
     return finish(state, 'GET_AVAILABILITY', askForField('selectedClass'), { usedFallbackNlu: usedFallback });
+  }
+  // FIX (user complaint): if the selected train's VERIFIED classes don't include the
+  // requested class, say so honestly and re-ask — never show fake availability.
+  const offeredClasses = state.context.selectedTrain?.travelClasses ?? null;
+  if (offeredClasses && offeredClasses.length > 0 && !offeredClasses.includes(travelClass)) {
+    const question = `${trainNumber} mein ${travelClass} class available nahi hai — is train mein ${offeredClasses.join('/')} classes hain. Kaunsi class chahiye?`;
+    state.context = updateConversationMeta(
+      state.context,
+      { lastAskedField: 'selectedClass', pendingQuestion: question },
+      nowIso(state),
+    );
+    state.context = setContextSlots(state.context, { selectedClass: null }, 'FILL_MISSING', nowIso(state));
+    return finish(state, 'GET_AVAILABILITY', question, { usedFallbackNlu: usedFallback });
   }
   rememberTrain(state, trainNumber);
   const result = await executeTool(state, 'getAvailability', {
