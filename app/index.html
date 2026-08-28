@@ -4,751 +4,617 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>BookKaro AI — Where are you going?</title>
-<meta name="description" content="Just tell BookKaro where you want to go. Conversational AI railway assistant — Hindi, Hinglish and English. Ask by voice or text." />
-<meta name="theme-color" content="#EE7A2D" />
-<link rel="preload" as="image" href="assets/hero-train-bookkaro.jpg" />
+<meta name="description" content="Just ask BookKaro. Conversational AI railway assistant — trains, live status, fares, PNR. Hindi, Hinglish and English — by voice or text." />
+<meta name="theme-color" content="#14100D" />
+<link rel="preload" as="image" href="assets/train-hero.jpg" />
 <style>
   /* ════════════════════════════════════════════════════════════════════
-     BookKaro AI — homepage shell (frontend only)
-     Layout rule: horizontal / side-by-side composition at EVERY width.
-     No breakpoint ever stacks the hero into a single long column.
+     BookKaro AI — mobile-first horizontal app dashboard
+     Composition rule: at phone sizes everything is a HORIZONTAL layer —
+     wide hero, full-width AI composer, swipeable carousels, bottom nav.
+     The page never scrolls horizontally; only carousels do.
      No railway calls, no secrets, no external URLs.
      ════════════════════════════════════════════════════════════════════ */
   :root {
-    --ink: #1C1612;
-    --ink-2: #3A322C;
+    --bg: #14100D;
+    --bg-2: #1B1512;
+    --card: #FFFFFF;
+    --ink: #201812;
     --muted: #6F645B;
     --faint: #9A8C82;
     --orange: #EE7A2D;
     --orange-deep: #D45F14;
     --orange-soft: #FFF1E4;
-    --amber: #F4A15A;
-    --cream: #FFF8F1;
-    --cream-2: #FFF1E4;
-    --white: #FFFFFF;
     --line: #EDE3D6;
-    --charcoal: #16110E;
-    --charcoal-2: #241C18;
     --teal: #167B70;
-    --shadow: 0 18px 50px rgba(80, 42, 18, .10);
-    --shadow-sm: 0 8px 22px rgba(80, 42, 18, .07);
-    --radius: 24px;
-    --gut: 14px;
+    --gut: 12px;
+    --navh: 62px;
+    --radius: 20px;
   }
   * { box-sizing: border-box; margin: 0; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", sans-serif;
-    color: var(--ink);
-    background: var(--cream);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
+    background: var(--bg); color: var(--ink);
+    line-height: 1.45; -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
   body.lock { overflow: hidden; }
   a { color: inherit; text-decoration: none; }
-  button, input, textarea { font: inherit; color: inherit; }
+  button, input { font: inherit; color: inherit; }
   img { max-width: 100%; display: block; }
   ul { list-style: none; padding: 0; }
   :focus-visible { outline: 2.5px solid var(--orange-deep); outline-offset: 2px; border-radius: 8px; }
-  .wrap { width: min(1200px, calc(100% - 2 * var(--gut))); margin-inline: auto; }
-  @media (min-width: 720px) { .wrap { width: min(1200px, calc(100% - 48px)); } }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-  /* ── row helpers: horizontal everywhere ── */
-  .row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  /* app shell — full-bleed on phones, framed device on desktop */
+  .shell {
+    max-width: 430px; margin-inline: auto; min-height: 100svh; min-height: 100dvh;
+    background: var(--bg-2); position: relative;
+    display: flex; flex-direction: column;
+    padding-bottom: calc(var(--navh) + env(safe-area-inset-bottom));
+    overflow: clip;
+  }
+  .frame-label { display: none; }
+  @media (min-width: 900px) {
+    body {
+      background:
+        radial-gradient(1100px 500px at 18% -10%, rgba(238, 122, 45, .16), transparent 60%),
+        radial-gradient(900px 500px at 88% 108%, rgba(238, 122, 45, .10), transparent 60%),
+        #0E0B09;
+    }
+    .frame-label {
+      display: block; text-align: center; padding: 26px 16px 14px;
+      color: rgba(255, 248, 241, .5); font-size: 12.5px; letter-spacing: .2px;
+    }
+    .frame-label b { color: rgba(255, 248, 241, .92); }
+    .shell {
+      max-width: 430px; border-radius: 42px; border: 1px solid rgba(255,255,255,.09);
+      box-shadow: 0 40px 120px rgba(0,0,0,.55), 0 0 0 10px #050403, 0 0 0 11px rgba(255,255,255,.06);
+      margin-bottom: 56px; min-height: 840px;
+    }
+  }
+
+  /* ── top app bar ── */
+  .appbar {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; gap: 8px;
+    height: 56px; padding: 0 var(--gut);
+    background: rgba(20, 16, 13, .86); backdrop-filter: blur(16px) saturate(140%);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+  }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 16px; letter-spacing: -.3px; color: #FFF8F1; }
+  .brand .b-sub { display: block; font-size: 8px; letter-spacing: 1.6px; color: var(--orange); font-weight: 800; line-height: 1; margin-top: 2px; }
+  .mark {
+    position: relative; width: 32px; height: 32px; border-radius: 10px; flex: 0 0 auto;
+    background: radial-gradient(circle at 34% 28%, #fff 0 12%, #FFCE93 30%, var(--orange) 78%);
+    box-shadow: 0 5px 14px rgba(238, 122, 45, .38), inset 0 0 0 1px rgba(255,255,255,.55);
+  }
+  .mark::after {
+    content: ""; position: absolute; inset: 0; margin: auto; width: 15px; height: 15px;
+    background:
+      linear-gradient(#fff, #fff) 3px 4px / 9px 5.5px no-repeat,
+      radial-gradient(circle, #fff 1.3px, transparent 1.5px) 3.5px 11.5px / 4px 4px no-repeat,
+      radial-gradient(circle, #fff 1.3px, transparent 1.5px) 8.5px 11.5px / 4px 4px no-repeat;
+    border-radius: 3px; opacity: .92;
+  }
+  .net {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; color: #C9BCB2;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09);
+    padding: 5px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  .net i { width: 7px; height: 7px; border-radius: 50%; background: #9A8C82; box-shadow: 0 0 0 3px rgba(154,140,130,.18); }
+  .net.ok i { background: #2FBF9B; box-shadow: 0 0 0 3px rgba(47,191,155,.2); }
+  .net.off i { background: #E06A4E; box-shadow: 0 0 0 3px rgba(224,106,78,.2); }
+  .avatar {
+    width: 34px; height: 34px; border-radius: 50%; flex: 0 0 auto;
+    display: grid; place-items: center;
+    background: linear-gradient(150deg, #FFD9B4, var(--orange)); color: #3A1E07;
+    border: 0; cursor: pointer; box-shadow: 0 4px 12px rgba(238,122,45,.3);
+  }
+
+  /* ── page column ── */
+  .page { flex: 1; display: flex; flex-direction: column; padding: 12px var(--gut) 18px; gap: 14px; }
+
+  .i { width: 20px; height: 20px; flex: 0 0 auto; }
+  .i.sm { width: 14px; height: 14px; }
+  .i.xs { width: 12px; height: 12px; }
+
+  /* ══ HERO — wide horizontal card (35–40% of viewport) ══ */
+  .hero {
+    position: relative; border-radius: var(--radius); overflow: hidden;
+    display: grid; grid-template-columns: 1.06fr .94fr; align-items: stretch;
+    min-height: clamp(248px, 33svh, 330px);
+    background:
+      radial-gradient(150% 170% at 108% 6%, #F58A3C 0%, #E06517 42%, #B84A0F 74%, #7E320B 100%);
+    box-shadow: 0 16px 42px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.22);
+    margin-right: calc(var(--gut) * -1);   /* premium bleed toward right edge */
+  }
+  .hero::before {           /* subtle railway track lines */
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .16;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 34px, rgba(255,255,255,.5) 34px 36px),
+      linear-gradient(transparent 66%, rgba(46, 18, 4, .55) 66.5%, rgba(46, 18, 4, .55) 71%, transparent 71.5%),
+      linear-gradient(transparent 80%, rgba(46, 18, 4, .45) 80.5%, rgba(46, 18, 4, .45) 85%, transparent 85.5%);
+    mask-image: linear-gradient(115deg, transparent 4%, #000 62%);
+    -webkit-mask-image: linear-gradient(115deg, transparent 4%, #000 62%);
+  }
+  .hero-copy {
+    position: relative; z-index: 2; align-self: center;
+    padding: 14px 4px 14px 16px; min-width: 0; color: #FFF8F1;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+    color: #FFE3C8; background: rgba(58, 22, 4, .38);
+    border: 1px solid rgba(255, 227, 200, .35);
+    padding: 4px 9px; border-radius: 999px; margin-bottom: 9px;
+  }
+  .hero-copy h1 {
+    font-size: clamp(17.5px, 5.2vw, 23px); line-height: 1.18; letter-spacing: -.5px; font-weight: 800;
+  }
+  .hero-copy h1 em { font-style: normal; color: #FFE9D4; text-decoration: underline; text-decoration-color: rgba(255,233,212,.45); text-underline-offset: 4px; text-decoration-thickness: 2px; white-space: nowrap; }
+  @media (max-width: 339px) { .hero-copy h1 em { white-space: normal; } }
+  .hero-copy .h-sub { font-size: clamp(11px, 3.2vw, 12.5px); color: #FFE3C8; margin-top: 7px; max-width: 21ch; }
+  .hero-chip {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+    font-size: 11px; font-weight: 750; color: #6b3007;
+    background: #FFF3E4; border-radius: 999px; padding: 6px 11px;
+    box-shadow: 0 4px 12px rgba(58, 22, 4, .28);
+  }
+  .hero-chip .i { color: var(--orange-deep); }
+  .hero-visual { position: relative; min-width: 0; }
+  .hero-visual img {
+    position: absolute; right: -12%; bottom: 9%; width: 120%; max-width: none; height: auto;
+    mix-blend-mode: screen;   /* pure-black render bg melts into the orange gradient */
+  }
+  .hero-visual::before {    /* soft glow under train */
+    content: ""; position: absolute; right: -4%; bottom: 3%; width: 88%; height: 32%;
+    background: radial-gradient(50% 62% at 50% 62%, rgba(255, 190, 120, .55), transparent 72%);
+    filter: blur(8px);
+  }
+
+  /* ══ AI COMPOSER — overlaps hero ══ */
+  .composer-card {
+    position: relative; margin-top: -38px; z-index: 5;
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid rgba(237, 227, 214, .9);
+    box-shadow: 0 22px 48px rgba(10, 5, 2, .45);
+    padding: 13px 13px 11px;
+  }
+  .a-head { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; min-width: 0; }
+  .a-dot { width: 26px; height: 26px; border-radius: 50%; flex: 0 0 auto; position: relative;
+    background: radial-gradient(circle at 34% 28%, #FFE9D4 0 18%, #FFB877 46%, var(--orange) 88%);
+    box-shadow: 0 4px 10px rgba(238,122,45,.35);
+  }
+  .a-dot::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(238,122,45,.35); border-right-color: transparent; }
+  .composer-card[data-state="listening"] .a-dot::after,
+  .composer-card[data-state="thinking"] .a-dot::after { animation: spin 1.1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .a-id { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+  .a-title { font-size: 12.5px; font-weight: 800; letter-spacing: -.2px; white-space: nowrap; }
+  .a-status { font-size: 10.5px; font-weight: 650; color: var(--teal); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .a-status.think { color: var(--orange-deep); }
+  .a-status.err { color: #B4552F; }
+  .seg { margin-left: auto; display: flex; background: #F6EEE3; border-radius: 999px; padding: 3px; flex: 0 0 auto; gap: 2px; }
+  .seg button {
+    border: 0; background: transparent; border-radius: 999px; cursor: pointer;
+    font-size: 11px; font-weight: 750; color: var(--muted); padding: 5px 8px; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .seg button[aria-pressed="true"] { background: #fff; color: var(--ink); box-shadow: 0 2px 6px rgba(80,42,18,.14); }
+
+  .c-row { display: flex; align-items: center; gap: 9px; }
+  .c-field {
+    flex: 1; min-width: 0; display: flex; align-items: center;
+    background: #FAF5EC; border: 1.5px solid var(--line); border-radius: 999px;
+    padding: 4px 6px 4px 15px; transition: border-color .15s, box-shadow .15s;
+  }
+  .c-field:focus-within { border-color: var(--orange); box-shadow: 0 0 0 3.5px rgba(238,122,45,.16); }
+  .c-field input {
+    flex: 1; min-width: 0; border: 0; background: transparent; outline: none;
+    font-size: 13.5px; padding: 8px 0; color: var(--ink);
+  }
+  .c-field input::placeholder { color: var(--faint); }
+  .mic {
+    width: 50px; height: 50px; border-radius: 50%; flex: 0 0 auto; cursor: pointer;
+    border: 0; display: grid; place-items: center; color: #fff;
+    background: linear-gradient(155deg, #FFA35C, var(--orange-deep));
+    box-shadow: 0 8px 20px rgba(212, 95, 20, .42), inset 0 1px 0 rgba(255,255,255,.4);
+    transition: transform .12s;
+  }
+  .mic:active { transform: scale(.94); }
+  .mic[aria-pressed="true"] { background: linear-gradient(155deg, #E06A4E, #B4432A); box-shadow: 0 0 0 6px rgba(224,106,78,.18), 0 8px 20px rgba(180,67,42,.45); }
+  .send {
+    width: 46px; height: 46px; border-radius: 50%; flex: 0 0 auto; cursor: pointer;
+    border: 0; display: grid; place-items: center;
+    background: #201812; color: #fff; transition: transform .12s, opacity .15s;
+    box-shadow: 0 6px 16px rgba(20, 12, 6, .35);
+  }
+  .send:active { transform: scale(.94); }
+  .send[disabled] { opacity: .55; }
+  .send.go { background: var(--teal); }
+  .c-foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 9px; padding: 0 6px; font-size: 10.5px; color: var(--faint); font-weight: 600; }
+  .c-foot span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .c-foot kbd { font-family: inherit; background: #F6EEE3; border: 1px solid var(--line); border-radius: 5px; padding: 0 4px; font-size: 9.5px; }
+
+  /* listening state — same card transforms, never fullscreen */
+  .listen {
+    position: absolute; inset: 0; z-index: 6; border-radius: var(--radius);
+    background: linear-gradient(165deg, #FFFFFF, #FFF3E4);
+    display: none; align-items: center; gap: 12px; padding: 14px 14px;
+  }
+  .composer-card[data-state="listening"] .listen { display: flex; }
+  .composer-card[data-state="listening"] .a-head,
+  .composer-card[data-state="listening"] .c-row,
+  .composer-card[data-state="listening"] .c-foot { visibility: hidden; }
+  .orb-wrap { position: relative; width: 58px; height: 58px; flex: 0 0 auto; display: grid; place-items: center; }
+  .orb-wrap::before, .orb-wrap::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid rgba(238,122,45,.45); animation: pulse 1.7s ease-out infinite;
+  }
+  .orb-wrap::after { animation-delay: .55s; }
+  @keyframes pulse { 0% { transform: scale(.55); opacity: 1; } 100% { transform: scale(1.15); opacity: 0; } }
+  .orb-core {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: radial-gradient(circle at 34% 28%, #FFE9D4 0 16%, #FFB877 48%, var(--orange) 90%);
+    box-shadow: 0 6px 16px rgba(238,122,45,.45);
+  }
+  .listen-main { flex: 1; min-width: 0; }
+  .listen-main b { display: flex; align-items: center; gap: 6px; font-size: 13px; letter-spacing: .3px; }
+  .wave { display: inline-flex; align-items: flex-end; gap: 2.5px; height: 12px; }
+  .wave i { width: 3px; border-radius: 2px; background: var(--orange); animation: wv .9s ease-in-out infinite; }
+  .wave i:nth-child(1) { height: 5px; animation-delay: 0s; }
+  .wave i:nth-child(2) { height: 10px; animation-delay: .12s; }
+  .wave i:nth-child(3) { height: 7px; animation-delay: .24s; }
+  .wave i:nth-child(4) { height: 11px; animation-delay: .36s; }
+  @keyframes wv { 0%, 100% { transform: scaleY(.5); } 50% { transform: scaleY(1); } }
+  .heard {
+    font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 600;
+    overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; min-height: 17px;
+  }
+  .listen-actions { display: flex; flex-direction: column; gap: 7px; flex: 0 0 auto; }
+  .btn {
+    border: 0; border-radius: 999px; padding: 9px 15px; font-weight: 750; cursor: pointer; font-size: 12.5px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap;
+  }
+  .btn.primary { background: linear-gradient(155deg, #FFA35C, var(--orange-deep)); color: #fff; box-shadow: 0 6px 16px rgba(212,95,20,.4); }
+  .btn.ghost { background: #F6EEE3; color: var(--ink-2, #3A322C); border: 1px solid var(--line); }
+  .btn.sm { padding: 7px 12px; font-size: 11.5px; }
+
+  /* ══ section headings inside the app ══ */
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 0 2px; }
+  .sec-head h2 { font-size: 14.5px; font-weight: 800; letter-spacing: -.3px; color: #FFF8F1; }
+  .sec-head .more { font-size: 11.5px; font-weight: 700; color: var(--orange); white-space: nowrap; }
+
+  /* ══ QUICK ACTIONS — horizontal swipe carousel ══ */
   .rail {
-    display: flex; gap: 12px; min-width: 0;
+    display: flex; gap: 9px; min-width: 0;
     overflow-x: auto; overscroll-behavior-x: contain;
     scroll-snap-type: x proximity; scroll-padding-left: 2px;
-    padding: 4px 2px 14px; margin: -4px -2px 0;
+    padding: 4px 2px 6px; margin: 0 -2px;
     scrollbar-width: none;
   }
   .rail::-webkit-scrollbar { display: none; }
-  .rail > * { scroll-snap-align: start; }
-  .rail.edge {
-    mask-image: linear-gradient(90deg, #000 0 calc(100% - 34px), transparent 100%);
-    -webkit-mask-image: linear-gradient(90deg, #000 0 calc(100% - 34px), transparent 100%);
-  }
+  .rail > * { scroll-snap-align: start; flex: 0 0 auto; }
+  .rail.edge { mask-image: linear-gradient(90deg, #000 0 calc(100% - 26px), transparent 100%); -webkit-mask-image: linear-gradient(90deg, #000 0 calc(100% - 26px), transparent 100%); }
   .rail.edge.is-end { mask-image: none; -webkit-mask-image: none; }
-  @media (min-width: 1024px) {
-    .rail.to-grid { display: grid; overflow: visible; padding: 0; margin: 0; mask-image: none; -webkit-mask-image: none; }
-    .rail.to-grid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .rail.to-grid.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-    .rail.to-grid > * { width: auto !important; flex: 1 1 auto; }
+  .qa {
+    width: 86px; display: flex; flex-direction: column; align-items: center; gap: 7px;
+    background: #241C16; border: 1px solid rgba(255,255,255,.07); border-radius: 16px;
+    padding: 12px 6px 10px; cursor: pointer; transition: transform .12s, border-color .15s;
+    color: #F5EDE4; text-align: center;
   }
+  .qa:active { transform: scale(.95); }
+  .qa .ico {
+    width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center;
+    color: #FFC49A;
+    background: linear-gradient(160deg, rgba(238,122,45,.26), rgba(238,122,45,.1));
+    border: 1px solid rgba(238,122,45,.3);
+  }
+  .qa b { font-size: 10.5px; font-weight: 750; line-height: 1.25; letter-spacing: -.1px; }
 
-  /* ══ NAV ══ */
-  .nav {
-    position: sticky; top: 0; z-index: 40;
-    display: flex; align-items: center; gap: 8px;
-    height: 60px; padding: 0 var(--gut);
-    background: rgba(255, 248, 241, .82); backdrop-filter: blur(18px) saturate(140%);
-    border-bottom: 1px solid rgba(237, 227, 214, .8);
-    transition: box-shadow .25s, background .25s;
+  /* ══ TRAIN RESULT CARDS — horizontal carousel ══ */
+  .tcard {
+    width: min(84vw, 336px);
+    display: grid; grid-template-columns: 30% 1fr;
+    background: var(--card); border-radius: 18px; overflow: hidden;
+    box-shadow: 0 14px 34px rgba(5, 2, 0, .5);
+    cursor: pointer; transition: transform .12s; text-align: left; border: 0; padding: 0;
   }
-  @media (min-width: 720px) { .nav { height: 72px; padding: 0 24px; } }
-  .nav.stuck { box-shadow: 0 6px 22px rgba(80, 42, 18, .08); background: rgba(255, 252, 248, .94); }
-  .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; font-size: 16px; letter-spacing: -.35px; flex: 0 0 auto; }
-  @media (min-width: 720px) { .brand { font-size: 17px; gap: 10px; } }
-  .mark {
-    position: relative; width: 34px; height: 34px; border-radius: 11px; flex: 0 0 auto;
-    background: radial-gradient(circle at 34% 28%, #fff 0 12%, #FFCE93 30%, var(--orange) 78%);
-    box-shadow: 0 6px 16px rgba(238, 122, 45, .3), inset 0 0 0 1px rgba(255, 255, 255, .55);
+  .tcard:active { transform: scale(.985); }
+  .t-thumb { position: relative; background: #0E0B08; min-height: 128px; }
+  .t-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .96; }
+  .t-thumb::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 62%, rgba(255,255,255,.95) 99%); }
+  .t-no-badge {
+    position: absolute; top: 8px; left: 8px; z-index: 2;
+    font-size: 9.5px; font-weight: 800; letter-spacing: .4px; color: #FFE3C8;
+    background: rgba(16, 8, 2, .68); border: 1px solid rgba(255, 227, 200, .3);
+    padding: 3px 7px; border-radius: 999px;
   }
-  .mark::after {
-    content: ""; position: absolute; inset: 0; margin: auto; width: 16px; height: 16px;
-    background:
-      linear-gradient(#fff, #fff) 3px 4px / 10px 6px no-repeat,
-      radial-gradient(circle, #fff 1.4px, transparent 1.6px) 4px 12px / 4px 4px no-repeat,
-      radial-gradient(circle, #fff 1.4px, transparent 1.6px) 9px 12px / 4px 4px no-repeat;
-    border-radius: 3px; opacity: .92;
+  .t-body { padding: 11px 12px 10px 4px; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .t-name { font-size: 13px; font-weight: 800; letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .t-name .no { color: var(--orange-deep); margin-right: 4px; }
+  .t-times { display: flex; align-items: center; gap: 7px; font-size: 12.5px; min-width: 0; }
+  .t-times b { font-size: 13.5px; letter-spacing: -.2px; }
+  .t-times .stn { color: var(--faint); font-size: 10.5px; font-weight: 750; }
+  .t-line { flex: 1; min-width: 14px; height: 2px; background: linear-gradient(90deg, var(--orange), #F0B58B); border-radius: 2px; position: relative; }
+  .t-line::after { content: ""; position: absolute; right: -1px; top: -2px; border: 3px solid transparent; border-left: 5px solid #F0B58B; }
+  .t-meta { display: flex; align-items: center; gap: 5px; flex-wrap: nowrap; overflow: hidden; }
+  .cap { font-size: 9.5px; font-weight: 800; letter-spacing: .3px; color: var(--muted); background: #F6EEE3; border: 1px solid var(--line); padding: 2.5px 7px; border-radius: 999px; white-space: nowrap; }
+  .cap.hot { color: #7E320B; background: var(--orange-soft); border-color: #F5CFA9; }
+  .cap.ok { color: var(--teal); background: #EAF6F2; border-color: #CBE7DD; white-space: nowrap; }
+  .t-link { margin-top: auto; align-self: flex-end; font-size: 11.5px; font-weight: 800; color: var(--orange-deep); display: inline-flex; align-items: center; gap: 4px; }
+  .tcard-more {
+    width: 132px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    background: #241C16; border: 1.5px dashed rgba(238,122,45,.45); border-radius: 18px;
+    color: #F5EDE4; font-size: 12px; font-weight: 750; text-align: center; padding: 12px; cursor: pointer;
   }
-  .brand small { display: block; font-size: 8.5px; letter-spacing: 1.5px; color: var(--orange-deep); font-weight: 800; line-height: 1; margin-top: 2px; }
-  .links { display: none; gap: 22px; margin-left: 12px; color: var(--muted); font-size: 14px; font-weight: 650; }
-  .links a { padding: 6px 2px; position: relative; transition: color .18s; }
-  .links a:hover { color: var(--ink); }
-  .links a[aria-current="page"] { color: var(--ink); }
-  .links a[aria-current="page"]::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; border-radius: 2px; background: var(--orange);
-  }
-  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 7px; flex: 0 0 auto; }
-  @media (min-width: 720px) { .links { display: flex; } .nav-right { gap: 10px; } .drawer { top: 68px; } }
+  .tcard-more .ico { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: rgba(238,122,45,.18); color: #FFC49A; }
+  .sample-note { padding: 0 2px; font-size: 10px; color: rgba(245, 237, 228, .42); font-weight: 600; }
 
-  .btn {
-    border: 0; border-radius: 999px; padding: 10px 16px; font-weight: 750; cursor: pointer; font-size: 14px;
-    display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
-    transition: transform .18s, background .18s, box-shadow .18s, border-color .18s;
+  /* ══ live status strip ══ */
+  .live-strip {
+    display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(120deg, #26221E, #2B2015 60%, #3A2410);
+    border: 1px solid rgba(238,122,45,.28); border-radius: 16px;
+    padding: 11px 12px; cursor: pointer; color: #F5EDE4;
   }
-  .btn:hover { transform: translateY(-1px); }
-  .btn:active { transform: translateY(0) scale(.985); }
-  .primary { background: var(--orange); color: #fff; box-shadow: 0 10px 22px rgba(238, 122, 45, .32); }
-  .primary:hover { background: var(--orange-deep); box-shadow: 0 12px 26px rgba(212, 95, 20, .34); }
-  .ghost { background: var(--white); border: 1px solid var(--line); color: var(--ink); }
-  .ghost:hover { border-color: #F0C69F; background: #FFFDFB; }
-  .btn.sm { padding: 9px 13px; font-size: 13px; }
-  .icon-btn {
-    width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); flex: 0 0 auto;
-    background: var(--white); cursor: pointer; display: grid; place-items: center; color: var(--ink);
-    transition: border-color .18s, background .18s, transform .18s;
+  .live-strip:active { transform: scale(.985); }
+  .live-ico {
+    width: 36px; height: 36px; border-radius: 11px; flex: 0 0 auto; display: grid; place-items: center; color: #FFC49A;
+    background: linear-gradient(160deg, rgba(238,122,45,.3), rgba(238,122,45,.12)); border: 1px solid rgba(238,122,45,.35);
   }
-  .icon-btn:hover { border-color: var(--orange); color: var(--orange-deep); transform: translateY(-1px); }
-  @media (min-width: 720px) { .icon-btn { width: 42px; height: 42px; } }
-  .desk-only { display: none; }
-  @media (min-width: 1024px) { .desk-only { display: inline-flex; } }
-  .m-only { display: inline-flex; }
-  @media (min-width: 1024px) { .m-only { display: none; } }
+  .live-strip b { display: block; font-size: 12.5px; letter-spacing: -.1px; }
+  .live-strip span { display: block; font-size: 10.5px; color: rgba(245,237,228,.55); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .live-arrow { margin-left: auto; flex: 0 0 auto; color: var(--orange); font-weight: 800; font-size: 16px; }
 
-  .drawer {
-    display: none; position: absolute; right: 10px; top: 56px; z-index: 45;
-    background: var(--white); border: 1px solid var(--line); border-radius: 18px; padding: 8px;
-    min-width: 218px; box-shadow: var(--shadow);
-  }
-  .drawer.open { display: block; animation: pop .18s ease; }
-  @keyframes pop { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
-  .drawer a, .drawer button {
-    display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: none; border: 0;
-    padding: 11px 12px; border-radius: 12px; font-weight: 650; color: var(--ink-2); cursor: pointer; font-size: 14px;
-  }
-  .drawer a:hover, .drawer button:hover { background: var(--cream-2); color: var(--ink); }
-  .drawer i { font-style: normal; width: 20px; text-align: center; }
+  /* ══ FOOTER (above bottom nav) ══ */
+  .foot { padding: 2px 2px 4px; font-size: 10.5px; color: rgba(245,237,228,.4); display: flex; flex-wrap: wrap; gap: 4px 8px; font-weight: 600; }
+  .foot a { color: rgba(245,237,228,.6); text-decoration: underline; text-underline-offset: 2px; }
 
-  /* ══ HERO ══ */
-  .hero {
-    position: relative; overflow: hidden;
-    background: linear-gradient(112deg, #FFF9F3 0%, #FFEBD8 34%, #FDBB80 68%, #EE7A2D 100%);
+  /* ══ BOTTOM NAV ══ */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 50;
+    width: min(430px, 100%);
+    display: flex; align-items: stretch;
+    height: calc(var(--navh) + env(safe-area-inset-bottom));
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background: rgba(22, 17, 13, .92); backdrop-filter: blur(18px) saturate(140%);
+    border-top: 1px solid rgba(255,255,255,.07);
   }
-  .hero::before {
-    content: ""; position: absolute; inset: -20% -10% auto auto; width: 62vw; height: 62vw; max-width: 780px; max-height: 780px;
-    background: radial-gradient(circle, rgba(255, 255, 255, .55) 0%, rgba(255, 255, 255, 0) 62%);
-    pointer-events: none;
+  .bn-item {
+    flex: 1; border: 0; background: transparent; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    color: rgba(245,237,228,.5); font-size: 9.5px; font-weight: 750; letter-spacing: .1px;
   }
-  .hero::after {
-    content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 120px;
-    background: linear-gradient(180deg, rgba(255, 248, 241, 0), var(--cream));
-    pointer-events: none;
-  }
-  .hero-row {
-    position: relative; z-index: 1;
-    display: flex; align-items: center; gap: 12px;             /* horizontal at every width */
-    padding: 16px 0 22px; min-height: min(720px, calc(100svh - 60px));
-  }
-  @media (min-width: 720px) { .hero-row { gap: 26px; padding: 26px 0 40px; min-height: min(760px, calc(100svh - 72px)); } }
-  @media (min-width: 1024px) { .hero-row { gap: 34px; } }
-  .hero-copy { flex: 1 1 auto; min-width: 0; }
+  .bn-item .bn-ico { line-height: 1; display: grid; place-items: center; }
+  .bn-item[aria-current="page"] { color: var(--orange); }
 
-  .eyebrow {
-    display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 12px;
-    font-size: 11px; font-weight: 800; letter-spacing: .9px; text-transform: uppercase; color: var(--orange-deep);
+  /* ══ login modal (existing guest flow) ══ */
+  .layer { position: fixed; inset: 0; z-index: 90; display: none; align-items: flex-end; justify-content: center; background: rgba(10, 6, 3, .62); backdrop-filter: blur(6px); padding: 16px; }
+  .layer.open { display: flex; }
+  .sheet {
+    width: min(430px, 100%); background: #fff; border-radius: 24px 24px 0 0;
+    padding: 22px 20px calc(20px + env(safe-area-inset-bottom)); position: relative;
   }
-  @media (min-width: 720px) { .eyebrow { gap: 9px; margin-bottom: 18px; font-size: 12px; letter-spacing: 1.3px; } }
-  .pill {
-    display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, .74);
-    border: 1px solid rgba(255, 255, 255, .9); border-radius: 999px; padding: 5px 10px;
-    letter-spacing: .5px; box-shadow: 0 4px 14px rgba(120, 60, 20, .07);
+  @media (min-width: 720px) { .layer { align-items: center; } .sheet { border-radius: 24px; } }
+  .sheet h2 { font-size: 18px; letter-spacing: -.3px; }
+  .sheet p { font-size: 13px; color: var(--muted); margin: 8px 0 16px; }
+  .sheet .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .icon-btn.close {
+    position: absolute; top: 14px; right: 14px; width: 32px; height: 32px;
+    border-radius: 50%; border: 1px solid var(--line); background: #FAF5EC; cursor: pointer; font-size: 13px; color: var(--muted);
   }
-  .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 0 3px rgba(22, 123, 112, .18); }
-  .pill.wait i { background: #C98A2E; box-shadow: 0 0 0 3px rgba(201, 138, 46, .18); }
-  .pill.off i { background: #B4552F; box-shadow: 0 0 0 3px rgba(180, 85, 47, .16); }
-  .pill.ghosty { background: rgba(255, 255, 255, .4); }
-
-  h1 {
-    font-size: clamp(23px, 6.4vw, 74px); line-height: 1.02; letter-spacing: -.035em; font-weight: 850;
-    max-width: 15ch;
-  }
-  @media (min-width: 720px) { h1 { font-size: clamp(40px, 6.2vw, 74px); letter-spacing: -.04em; max-width: 12ch; } }
-  h1 em { font-style: normal; color: var(--orange-deep); }
-  .sub { font-size: 14px; color: var(--ink-2); max-width: 44ch; margin: 10px 0 0; }
-  @media (min-width: 720px) { .sub { font-size: 17.5px; margin-top: 16px; } }
-  @media (max-width: 719px) {
-    .sub { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  }
-  .hinglish { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
-  @media (min-width: 720px) { .hinglish { font-size: 14.5px; margin-top: 8px; } }
-
-  /* ── assistant card (primary interaction) ── */
-  .assistant {
-    background: rgba(255, 255, 255, .96); border: 1px solid rgba(237, 227, 214, .95);
-    border-radius: 20px; padding: 12px; box-shadow: var(--shadow); margin-top: 14px;
-    max-width: 620px; position: relative;
-  }
-  @media (min-width: 720px) { .assistant { border-radius: 28px; padding: 16px; margin-top: 22px; } }
-  @media (min-width: 1024px) { .assistant { padding: 18px; } }
-  .a-head { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #F4EBE2; min-width: 0; }
-  @media (min-width: 720px) { .a-head { gap: 12px; padding-bottom: 14px; } }
-
-  .orb {
-    width: 34px; height: 34px; border-radius: 50%; position: relative; flex: 0 0 auto;
-    background: radial-gradient(circle at 37% 31%, #fff 0 13%, #FFD3A0 32%, var(--orange) 74%);
-    box-shadow: 0 0 0 5px rgba(238, 122, 45, .11), 0 0 0 10px rgba(238, 122, 45, .05);
-    transition: box-shadow .3s, background .3s;
-    animation: orbIdle 3.4s ease-in-out infinite;
-  }
-  .orb::after { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 1px solid rgba(238, 122, 45, .16); }
-  @media (min-width: 720px) { .orb { width: 40px; height: 40px; } }
-  @keyframes orbIdle { 50% { box-shadow: 0 0 0 8px rgba(238, 122, 45, .11), 0 0 0 15px rgba(238, 122, 45, .04); transform: scale(1.035); } }
-  [data-state="listening"] .orb, .orb.is-listening {
-    background: radial-gradient(circle at 40% 34%, #fff 0 14%, #FFC27D 34%, var(--orange-deep) 78%);
-    animation: orbListen 1.15s ease-in-out infinite;
-  }
-  @keyframes orbListen { 0%, 100% { box-shadow: 0 0 0 4px rgba(238, 122, 45, .2), 0 0 0 9px rgba(238, 122, 45, .09); } 50% { box-shadow: 0 0 0 9px rgba(238, 122, 45, .16), 0 0 0 18px rgba(238, 122, 45, .05); } }
-  .orb.is-thinking { animation: orbThink .9s linear infinite; background: radial-gradient(circle at 40% 34%, #fff 0 12%, #FFE0BE 30%, #F09A4A 76%); }
-  @keyframes orbThink { to { filter: hue-rotate(8deg) brightness(1.06); } }
-  .orb.is-result { background: radial-gradient(circle at 38% 30%, #fff 0 15%, #A8E4D6 36%, var(--teal) 80%); animation: none; box-shadow: 0 0 0 5px rgba(22, 123, 112, .14), 0 0 0 10px rgba(22, 123, 112, .06); }
-  .orb.is-error { background: radial-gradient(circle at 38% 30%, #fff 0 13%, #F6C4B6 34%, #C75B39 78%); animation: none; }
-
-  .a-id { min-width: 0; }
-  .a-id b { display: block; font-size: 13.5px; letter-spacing: -.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .status { font-size: 11.5px; color: var(--teal); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
-  @media (min-width: 720px) { .a-id b { font-size: 14.5px; } .status { font-size: 12px; } }
-  .langs { margin-left: auto; font-size: 10.5px; color: var(--faint); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
-  @media (max-width: 400px) { .langs { display: none; } }
-  @media (max-width: 379px) {
-    .hero-row { gap: 9px; }
-    .visual { width: 82px; border-radius: 14px; }
-    .v-tag { font-size: 8px; letter-spacing: .3px; padding: 4px 2px; }
-    h1 { font-size: 22px; }
-    .sub { font-size: 13px; }
-  }
-
-  /* mode switch: text chat and voice are equal first-class modes */
-  .modes {
-    display: flex; align-items: center; gap: 4px; margin: 10px 0 0; padding: 3px; width: max-content; max-width: 100%;
-    background: #F8F1E9; border: 1px solid #EFE4D8; border-radius: 999px;
-  }
-  .modes button {
-    border: 0; background: none; border-radius: 999px; padding: 7px 13px; font-size: 12.5px; font-weight: 750;
-    color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: .18s;
-    white-space: nowrap;
-  }
-  .modes button[aria-pressed="true"] { background: var(--white); color: var(--orange-deep); box-shadow: var(--shadow-sm); }
-
-  .composer {
-    margin-top: 10px; border: 1.5px solid var(--line); border-radius: 16px; padding: 10px;
-    background: #FFFCF8; transition: border-color .2s, box-shadow .2s, transform .2s;
-  }
-  @media (min-width: 720px) { .composer { margin-top: 12px; border-radius: 20px; padding: 12px; } }
-  .composer:focus-within { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(238, 122, 45, .12); }
-  .composer.sending { border-color: var(--orange); animation: sendPulse .42s ease; }
-  @keyframes sendPulse { 40% { transform: scale(1.012); } 100% { transform: none; } }
-  .c-row { display: flex; align-items: flex-end; gap: 8px; }
-  /* on narrow phones the composer keeps one horizontal band: input row, then actions row */
-  @media (max-width: 559px) {
-    .c-row { flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-    .composer textarea { flex: 1 1 100%; min-height: 44px; }
-    .icon { width: 40px; height: 40px; }
-  }
-  .composer textarea {
-    flex: 1 1 auto; min-width: 0; border: 0; outline: 0; resize: none; background: transparent;
-    min-height: 46px; max-height: 168px; font-size: 15.5px; line-height: 1.4; padding: 4px 2px 0;
-  }
-  @media (min-width: 720px) { .composer textarea { min-height: 54px; font-size: 16px; padding-left: 6px; } }
-  .composer textarea::placeholder { color: #B4A499; }
-  .c-foot { display: none; align-items: center; gap: 10px; margin-top: 8px; padding: 0 4px; font-size: 11.5px; color: var(--faint); font-weight: 650; }
-  @media (min-width: 720px) { .c-foot { display: flex; } }
-  .c-foot kbd {
-    font: inherit; background: #F6EEE6; border: 1px solid #EADFD2; border-bottom-width: 2px;
-    border-radius: 6px; padding: 1px 5px; color: var(--ink-2);
-  }
-  .icon {
-    width: 42px; height: 42px; border-radius: 50%; border: 0; cursor: pointer; flex: 0 0 auto;
-    display: grid; place-items: center; transition: transform .15s, background .18s, color .18s, box-shadow .18s;
-  }
-  @media (min-width: 720px) { .icon { width: 44px; height: 44px; } }
-  .icon:hover { transform: scale(1.06); }
-  .icon:active { transform: scale(.95); }
-  .mic { background: var(--orange-soft); color: var(--orange-deep); }
-  .mic[aria-pressed="true"] { background: var(--orange); color: #fff; box-shadow: 0 8px 18px rgba(238, 122, 45, .3); }
-  .send { background: var(--orange); color: #fff; box-shadow: 0 8px 16px rgba(238, 122, 45, .28); }
-  .send:hover { background: var(--orange-deep); }
-  .send:disabled { opacity: .5; cursor: progress; transform: none; }
-  .send.go svg { animation: fly .42s ease; }
-  @keyframes fly { 45% { transform: translateX(5px) scale(.86); opacity: .5; } 100% { transform: none; opacity: 1; } }
-
-  /* voice mode panel (inside the same assistant card — no separate page) */
-  .voicebar { display: none; margin-top: 10px; text-align: center; border: 1.5px dashed #F1CBA4; background: linear-gradient(180deg, #FFF8F0, #FFF2E5); border-radius: 16px; padding: 16px 14px; }
-  .voicebar.on { display: block; animation: pop .2s ease; }
-  .voicebar p { font-size: 13px; color: var(--muted); margin: 10px 0 0; }
-  .voicebar .big-orb { width: 74px; height: 74px; margin: 0 auto; }
-  .talk { margin-top: 12px; width: 100%; justify-content: center; }
-
-  .chips { display: flex; gap: 7px; margin-top: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px;
-    mask-image: linear-gradient(90deg, #000 0 calc(100% - 22px), transparent);
-    -webkit-mask-image: linear-gradient(90deg, #000 0 calc(100% - 22px), transparent); }
-  .chips::-webkit-scrollbar { display: none; }
-  @media (min-width: 1024px) { .chips { flex-wrap: wrap; overflow: visible; mask-image: none; -webkit-mask-image: none; } }
-  .chip {
-    border: 1px solid var(--line); background: var(--white); padding: 8px 11px; border-radius: 999px;
-    color: var(--ink-2); font-size: 12px; font-weight: 700; cursor: pointer; transition: .16s; flex: 0 0 auto;
-    white-space: nowrap;
-  }
-  @media (min-width: 720px) { .chip { padding: 8px 13px; font-size: 12.5px; } }
-  .chip:hover { border-color: var(--orange); color: var(--orange-deep); background: #FFF6EC; transform: translateY(-1px); }
-  .chip kbd { font: inherit; opacity: .55; }
-
-  /* ── hero visual: always the right-hand column, never stacked ── */
-  .visual {
-    position: relative; flex: 0 0 auto; align-self: center;
-    width: clamp(84px, 26vw, 150px); aspect-ratio: 3 / 4;
-  }
-  @media (min-width: 720px) { .visual { width: clamp(228px, 32vw, 372px); } }
-  @media (min-width: 1024px) { .visual { width: min(50%, 552px); aspect-ratio: 4 / 3; } }
-  .visual .frame {
-    position: absolute; inset: 0; border-radius: 16px; overflow: hidden;
-    box-shadow: 0 26px 60px rgba(120, 55, 12, .28), inset 0 0 0 1px rgba(255, 255, 255, .5);
-    background: linear-gradient(180deg, #FFD9AE, #F49A46);
-  }
-  @media (min-width: 720px) { .visual .frame { border-radius: 26px; } }
-  .visual img.train { width: 100%; height: 100%; object-fit: cover; object-position: 40% 58%; }
-  @media (min-width: 720px) { .visual img.train { object-position: 46% 58%; } }
-  @media (min-width: 1024px) { .visual img.train { object-position: 52% 55%; } }
-  .visual::before {
-    content: ""; position: absolute; inset: -14% -22%; z-index: -1; border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 255, .6), rgba(255, 255, 255, 0) 66%);
-    filter: blur(6px);
-  }
-  .visual .frame::after {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(120, 45, 5, .22));
-  }
-  @media (max-width: 719px) {
-    .visual .frame::after { background: linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(120, 45, 5, .26)); }
-  }
-  .v-tag {
-    position: absolute; left: 6px; right: 6px; bottom: 6px; z-index: 2; text-align: center;
-    background: rgba(255, 255, 255, .9); backdrop-filter: blur(8px); border-radius: 999px;
-    font-size: 9px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--orange-deep);
-    padding: 5px 4px; box-shadow: 0 6px 16px rgba(90, 40, 10, .18);
-  }
-  @media (min-width: 1024px) { .v-tag { display: none; } }
-  @media (min-width: 720px) and (max-width: 1023px) { .v-tag { left: 10px; right: 10px; bottom: 10px; font-size: 10.5px; padding: 7px 6px; } }
-  .float {
-    display: none; position: absolute; left: 14px; bottom: 14px; width: min(300px, 84%); z-index: 3;
-    background: rgba(255, 255, 255, .95); border: 1px solid rgba(255, 255, 255, .8);
-    border-radius: 18px; padding: 13px 15px; box-shadow: 0 18px 44px rgba(70, 30, 10, .2); backdrop-filter: blur(10px);
-  }
-  @media (min-width: 1024px) { .float { display: block; } }
-  .float .kicker { font-size: 9.5px; font-weight: 800; letter-spacing: 1.1px; text-transform: uppercase; color: var(--faint); }
-  .float strong { display: block; margin: 4px 0 2px; font-size: 14px; }
-  .float p { font-size: 12.5px; color: var(--muted); }
-
-  /* ══ SECTIONS ══ */
-  .section { padding: 56px 0; }
-  @media (min-width: 720px) { .section { padding: 88px 0; } }
-  .head { max-width: 640px; margin: 0 0 24px; }
-  @media (min-width: 1024px) { .head.center { text-align: center; margin-inline: auto; } }
-  .head h2 { font-size: clamp(22px, 4.4vw, 42px); letter-spacing: -.03em; line-height: 1.12; }
-  .head p { color: var(--muted); margin-top: 8px; font-size: 14px; }
-  @media (min-width: 720px) { .head { margin-bottom: 36px; } .head p { font-size: 16px; margin-top: 10px; } }
-  .kicker { font-size: 11px; font-weight: 850; letter-spacing: 1.2px; text-transform: uppercase; color: var(--orange-deep); margin-bottom: 8px; }
-
-  .card {
-    display: block; background: var(--white); border: 1px solid var(--line); border-radius: 20px; padding: 18px;
-    transition: transform .2s, box-shadow .2s, border-color .2s; position: relative;
-  }
-
-  /* rail item widths — the rail itself never wraps, so cards stay side-by-side on mobile */
-  .rail > li { flex: 0 0 auto; width: min(84vw, 310px); }
-  .rail.cap-rail > li { width: clamp(226px, 68vw, 268px); }
-  @media (min-width: 720px) {
-    .rail > li { width: min(58vw, 330px); }
-    .rail.cap-rail > li { width: clamp(246px, 31vw, 300px); }
-  }
-  @media (min-width: 1024px) {
-    .rail.to-grid > li { width: auto; }
-    .rail.to-grid > li > * { height: 100%; }
-  }
-  /* "fit" rails share the row evenly at every width (steps) — still horizontal, never stacked */
-  .rail.fit > li { flex: 1 1 0; width: auto; min-width: 146px; }
-  @media (min-width: 720px) { .card { border-radius: 22px; padding: 24px; } }
-  a.card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: #F5C49E; }
-  .card .ico {
-    width: 40px; height: 40px; border-radius: 12px; background: var(--orange-soft); color: var(--orange-deep);
-    display: grid; place-items: center; font-size: 17px; margin-bottom: 14px; flex: 0 0 auto;
-  }
-  @media (min-width: 720px) { .card .ico { width: 42px; height: 42px; margin-bottom: 18px; } }
-  .card h3 { font-size: 16.5px; letter-spacing: -.2px; margin-bottom: 4px; }
-  @media (min-width: 720px) { .card h3 { font-size: 18px; margin-bottom: 6px; } }
-  .card p { font-size: 13.5px; color: var(--muted); }
-  @media (min-width: 720px) { .card p { font-size: 14px; } }
-  .card .go { position: absolute; right: 16px; top: 18px; color: #D9C7B6; font-size: 15px; transition: transform .2s, color .2s; }
-  a.card:hover .go { color: var(--orange); transform: translateX(3px); }
-  @media (min-width: 720px) { .card .go { right: 20px; top: 22px; } }
-  .cap-card { width: 100%; }
-
-  /* preview = same visual language as the real result cards in the assistant */
-  .preview { background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .note { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .4px; color: var(--orange-deep); background: var(--orange-soft); border-radius: 999px; padding: 5px 10px; margin-bottom: 10px; }
-  .ask {
-    display: flex; align-items: center; gap: 9px; background: var(--orange); color: #fff; border-radius: 16px 16px 6px 16px;
-    padding: 10px 14px; font-size: 13.5px; font-weight: 650; width: max-content; max-width: 100%; margin: 0 0 12px auto;
-    box-shadow: 0 8px 20px rgba(238, 122, 45, .24);
-  }
-  .tcard { border: 1px solid var(--line); background: #FFFCF8; border-radius: 18px; padding: 15px 16px; box-shadow: var(--shadow-sm); transition: border-color .18s, transform .18s; }
-  .tcard:hover { border-color: var(--orange); transform: translateY(-2px); }
-  .res-card { width: 100%; }
-  .t-head { display: flex; align-items: baseline; gap: 9px; flex-wrap: wrap; }
-  .t-no { font-weight: 850; font-size: 15.5px; color: var(--orange-deep); }
-  .t-name { font-size: 13.5px; color: var(--ink-2); }
-  .t-times { display: flex; gap: 14px; margin-top: 8px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
-  .t-times b { color: var(--ink); }
-  .caps { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-  .cap { font-size: 11px; font-weight: 700; border: 1px solid var(--line); border-radius: 7px; padding: 3px 8px; color: var(--muted); background: var(--cream); }
-  .cap.hot { border-color: #F4C9A8; color: var(--orange-deep); background: var(--orange-soft); }
-
-  /* steps stay a horizontal row too */
-  .steps { background: var(--charcoal); color: #fff; }
-  .steps .head p { color: #C9B8AC; }
-  .steps .kicker { color: var(--amber); }
-  .step { flex: 1 1 0; min-width: 150px; background: var(--charcoal-2); border: 1px solid #3A2D26; border-radius: 20px; padding: 16px; }
-  @media (min-width: 720px) { .step { min-width: 0; padding: 22px; } }
-  .step .ico { background: var(--orange); color: #fff; font-weight: 850; font-size: 12.5px; }
-  .step h3 { color: #fff; }
-  .step p { color: #C9B8AC; }
-
-  .trust-box { background: linear-gradient(180deg, #FFF4E8, #fff); border: 1px solid var(--line); border-radius: 22px; padding: 26px 18px; }
-  @media (min-width: 720px) { .trust-box { border-radius: 28px; padding: 40px 36px; } }
-  @media (min-width: 1024px) { .trust-box { padding: 46px 44px; } }
-  .trust-inner { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
-  @media (min-width: 720px) { .trust-inner { gap: 22px; } }
-  @media (min-width: 1024px) {
-    .trust-inner { flex-direction: row; align-items: center; justify-content: space-between; gap: 34px; }
-    .trust-inner > div:first-child { flex: 1 1 40%; min-width: 0; }
-    .trust-side { flex: 1 1 52%; min-width: 0; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
-  }
-  .checks { display: flex; gap: 8px; flex-wrap: wrap; color: var(--ink-2); font-size: 12.5px; font-weight: 650; }
-  @media (min-width: 720px) { .checks { gap: 10px; font-size: 13.5px; } }
-  .checks li { display: inline-flex; align-items: center; gap: 7px; background: var(--white); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; }
-  .checks b { color: var(--teal); }
-  .trust h2 { font-size: clamp(20px, 4.2vw, 34px); letter-spacing: -.03em; line-height: 1.18; }
-  .trust-cta { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  footer { padding: 22px 0 30px; color: var(--faint); font-size: 12px; }
-  .foot-row { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; }
-  footer a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
-  footer .sep { opacity: .5; }
-
-  /* ══ OVERLAYS ══ */
-  .layer { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; padding: 18px; }
-  .layer.open { display: grid; }
-  .layer::before { content: ""; position: absolute; inset: 0; background: rgba(18, 12, 8, .8); backdrop-filter: blur(6px); }
-  .voice-layer .card- { position: relative; text-align: center; max-width: 400px; width: 100%; color: #fff; animation: pop .22s ease; }
-  .v-wrap { width: 168px; height: 168px; margin: 0 auto 18px; position: relative; display: grid; place-items: center; }
-  @media (min-width: 720px) { .v-wrap { width: 196px; height: 196px; margin-bottom: 22px; } }
-  .v-wrap img { width: 122px; height: 122px; border-radius: 50%; object-fit: cover; position: relative; z-index: 2; box-shadow: 0 0 44px rgba(244, 161, 90, .4); transition: transform .3s; }
-  @media (min-width: 720px) { .v-wrap img { width: 148px; height: 148px; } }
-  .ring, .ring-2 { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(244, 161, 90, .42); opacity: 0; }
-  .voice-layer[data-state="listening"] .ring { animation: ringPulse 1.6s ease-out infinite; }
-  .voice-layer[data-state="listening"] .ring-2 { animation: ringPulse 1.6s ease-out .45s infinite; }
-  .voice-layer[data-state="listening"] .v-wrap img { transform: scale(1.04); }
-  .voice-layer[data-state="thinking"] .ring { animation: ringPulse 2.4s ease-out infinite; opacity: .5; }
-  .voice-layer[data-state="result"] .ring, .voice-layer[data-state="result"] .ring-2 { opacity: 1; border-color: rgba(122, 214, 197, .5); animation: none; transform: scale(1); }
-  .voice-layer[data-state="error"] .ring, .voice-layer[data-state="error"] .ring-2 { opacity: 1; border-color: rgba(228, 141, 116, .45); }
-  @keyframes ringPulse { 0% { transform: scale(.72); opacity: .7; } 100% { transform: scale(1.2); opacity: 0; } }
-  .wave { display: flex; justify-content: center; gap: 4px; height: 26px; margin: 6px 0 14px; align-items: center; }
-  .wave span { width: 4px; border-radius: 99px; background: var(--amber); height: 8px; animation: wave 1s ease-in-out infinite; }
-  .wave span:nth-child(2) { animation-delay: .1s; } .wave span:nth-child(3) { animation-delay: .2s; }
-  .wave span:nth-child(4) { animation-delay: .3s; } .wave span:nth-child(5) { animation-delay: .15s; }
-  @keyframes wave { 0%, 100% { height: 7px; } 50% { height: 24px; } }
-  .voice-layer:not([data-state="listening"]) .wave span { animation-play-state: paused; height: 6px; }
-  .voice-layer h2 { font-size: 22px; letter-spacing: -.5px; margin-bottom: 6px; }
-  @media (min-width: 720px) { .voice-layer h2 { font-size: 26px; } }
-  .voice-layer p { color: #E8D5C6; font-size: 13.5px; margin-bottom: 4px; min-height: 20px; }
-  .heard { color: #fff; font-weight: 700; font-size: 15px; min-height: 44px; margin: 10px auto 16px; max-width: 34ch; }
-  .voice-actions { display: flex; justify-content: center; gap: 9px; flex-wrap: wrap; }
-  .voice-actions .btn { min-width: 116px; justify-content: center; }
-  .layer .close { position: absolute; top: -6px; right: -2px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .2); color: #fff; }
-  .layer .close:hover { background: rgba(255, 255, 255, .2); }
-
-  .login-layer { z-index: 70; }
-  .login-layer::before { background: rgba(28, 22, 18, .5); }
-  .login-card {
-    position: relative; background: var(--white); border-radius: 22px; padding: 24px; width: min(420px, 100%);
-    box-shadow: var(--shadow); animation: pop .2s ease;
-  }
-  .login-card h2 { font-size: 21px; letter-spacing: -.4px; margin-bottom: 8px; }
-  .login-card p { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
-  .login-card .close { background: var(--cream-2); border: 1px solid var(--line); color: var(--ink); top: 14px; right: 14px; width: 34px; height: 34px; }
 
   @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-train" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="3" width="14" height="13.5" rx="3.5"/><path d="M5 10.5h14"/><circle cx="9" cy="13.6" r=".9" fill="currentColor" stroke="none"/><circle cx="15" cy="13.6" r=".9" fill="currentColor" stroke="none"/><path d="M9 20.2 7.2 22M15 20.2l1.8 1.8M12 16.5v1.8"/>
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 21.5S5.5 15.6 5.5 10.8a6.5 6.5 0 1 1 13 0c0 4.8-6.5 10.7-6.5 10.7Z"/><circle cx="12" cy="10.6" r="2.4"/>
+    </symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 2.5 5.5 13.5H11L9.5 21.5 18.5 10.5H13l0-8Z"/>
+    </symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5.5v13" stroke-dasharray="2.2 2.8"/>
+    </symbol>
+    <symbol id="i-rupee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 3h10M7 8h10"/><path d="M7 13h3.5a5 5 0 0 0 0-10"/><path d="m8.5 13 8 8"/>
+    </symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m4 11 8-7 8 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/>
+    </symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="8" r="3.6"/><path d="M5 20.2c1.3-3.7 4-5.4 7-5.4s5.7 1.7 7 5.4"/>
+    </symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M7 11a5 5 0 0 0 10 0M12 16v4M9 20h6"/>
+    </symbol>
+    <symbol id="i-kb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M8 14h8"/>
+    </symbol>
+  </defs>
+</svg>
+<div class="frame-label"><b>BookKaro AI</b> — mobile preview · built for 360 × 800, 390 × 844, 412 × 915</div>
+<div class="shell">
 
-<header class="nav" id="nav">
-  <a class="brand" href="index.html" aria-label="BookKaro AI home">
-    <span class="mark" aria-hidden="true"></span>
-    <span>BookKaro<small>AI ASSISTANT</small></span>
-  </a>
-  <nav class="links" aria-label="Primary">
-    <a href="index.html" aria-current="page">Home</a>
-    <a href="chat.html">Chat</a>
-    <a href="chat.html?q=meri%20bookings%20dikhao">My Bookings</a>
-    <a href="chat.html?q=mera%20wallet%20batao">Wallet</a>
+  <!-- ── top app bar ── -->
+  <header class="appbar">
+    <span class="brand">
+      <span class="mark" aria-hidden="true"></span>
+      <span>BookKaro<span class="b-sub">AI RAILWAY ASSISTANT</span></span>
+    </span>
+    <span class="net" id="net"><i aria-hidden="true"></i><span id="net-text">Connecting…</span></span>
+    <button class="avatar" id="profile-btn" type="button" aria-label="Profile"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg></button>
+  </header>
+
+  <div class="page">
+
+    <!-- ══ HORIZONTAL HERO ══ -->
+    <section class="hero" aria-label="BookKaro — your AI railway assistant">
+      <div class="hero-copy">
+        <span class="hero-tag">AI Railway Assistant</span>
+        <h1>Your journey,<br /><em>powered by AI.</em></h1>
+        <p class="h-sub">Ask anything — trains, fares, live status, booking.</p>
+        <span class="hero-chip"><svg class="i sm" aria-hidden="true"><use href="#i-train"/></svg>Just ask BookKaro</span>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <img src="assets/train-hero.jpg" alt="" fetchpriority="high" decoding="async" />
+      </div>
+    </section>
+
+    <!-- ══ AI COMPOSER (overlaps hero) ══ -->
+    <section class="composer-card" id="composer" data-state="idle" aria-label="Ask BookKaro">
+      <div class="a-head">
+        <span class="a-dot" aria-hidden="true"></span>
+        <span class="a-id">
+          <b class="a-title">BookKaro AI</b>
+          <span class="a-status" id="status" role="status" aria-live="polite">Ask away</span>
+        </span>
+        <span class="seg" role="group" aria-label="Type ya voice">
+          <button type="button" id="mode-text" aria-pressed="true"><svg class="i xs" aria-hidden="true"><use href="#i-kb"/></svg>Type</button>
+          <button type="button" id="mode-voice" aria-pressed="false"><svg class="i xs" aria-hidden="true"><use href="#i-mic"/></svg>Voice</button>
+        </span>
+      </div>
+
+      <form class="c-row" id="form">
+        <label class="sr" for="query">Ask BookKaro anything about your journey</label>
+        <div class="c-field">
+          <input id="query" name="query" type="text" autocomplete="off" spellcheck="false" enterkeyhint="send" placeholder="Ask BookKaro anything…" />
+        </div>
+        <button class="mic" id="mic" type="button" aria-label="Bolkar poochho — voice" aria-pressed="false" title="Bolkar poochho">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" stroke="currentColor" stroke-width="1.8"/><path d="M7 11a5 5 0 0 0 10 0M12 16v4M9 20h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <button class="send" id="send" type="submit" aria-label="Send to BookKaro">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
+
+      <div class="c-foot">
+        <span>Hindi · Hinglish · English</span>
+        <span>No app install needed</span>
+      </div>
+
+      <!-- in-card AI listening state (never fullscreen) -->
+      <div class="listen" aria-live="polite">
+        <span class="orb-wrap" aria-hidden="true"><span class="orb-core"></span></span>
+        <span class="listen-main">
+          <b>AI LISTENING <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span></b>
+          <span class="heard" id="heard">Speak to BookKaro — train, status, fare, PNR…</span>
+        </span>
+        <span class="listen-actions">
+          <button class="btn ghost sm" id="listen-cancel" type="button">Cancel</button>
+          <button class="btn primary sm" id="listen-send" type="button">Done · Send</button>
+        </span>
+      </div>
+    </section>
+
+    <!-- ══ QUICK ACTIONS — horizontal swipe carousel ══ -->
+    <section aria-label="Quick actions">
+      <div class="sec-head"><h2>Quick actions</h2></div>
+      <ul class="rail edge" id="qa-rail" style="margin-top:9px">
+        <li><button class="qa" type="button" data-q="Kal Amritsar se Delhi jaana hai"><span class="ico" aria-hidden="true"><svg class="i"><use href="#i-train"/></svg></span><b>Find<br />Train</b></button></li>
+        <li><button class="qa" type="button" data-q="12014 abhi kahan hai?"><span class="ico" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span><b>Live<br />Status</b></button></li>
+        <li><button class="qa" type="button" data-q="Kaunsi train fastest hai?"><span class="ico" aria-hidden="true"><svg class="i"><use href="#i-bolt"/></svg></span><b>Compare</b></button></li>
+        <li><button class="qa" type="button" data-q="Mera PNR check karo"><span class="ico" aria-hidden="true"><svg class="i"><use href="#i-ticket"/></svg></span><b>Check<br />PNR</b></button></li>
+        <li><button class="qa" type="button" data-q="12014 ka fare batao"><span class="ico" aria-hidden="true"><svg class="i"><use href="#i-rupee"/></svg></span><b>Fare</b></button></li>
+        <li><button class="qa" type="button" data-q="RAC aur WL kya hota hai?"><span class="ico" aria-hidden="true"><svg class="i"><use href="#i-chat"/></svg></span><b>Railway<br />Help</b></button></li>
+      </ul>
+    </section>
+
+    <!-- ══ TRAIN RESULT CAROUSEL — horizontal cards ══ -->
+    <section aria-label="Recommended trains">
+      <div class="sec-head">
+        <h2>Recommended trains</h2>
+        <span class="more">Amritsar → Delhi</span>
+      </div>
+      <ul class="rail edge" id="train-rail" style="margin-top:9px">
+        <li>
+          <button class="tcard" type="button" data-q="12014 Amritsar Shatabdi ki availability aur fare batao">
+            <span class="t-thumb" aria-hidden="true">
+              <span class="t-no-badge">12014</span>
+              <img src="assets/train-thumb.jpg" alt="" loading="lazy" decoding="async" />
+            </span>
+            <span class="t-body">
+              <span class="t-name"><span class="no">12014</span>Amritsar Shatabdi</span>
+              <span class="t-times"><b>04:55</b> <span class="stn">ASR</span> <span class="t-line" aria-hidden="true"></span> <span class="stn">NDLS</span> <b>06:57</b></span>
+              <span class="t-meta"><span class="cap">2h 02m</span><span class="cap hot">CC</span><span class="cap ok">AVL 42</span></span>
+              <span class="t-link">View details →</span>
+            </span>
+          </button>
+        </li>
+        <li>
+          <button class="tcard" type="button" data-q="14542 Example Express ki availability aur fare batao">
+            <span class="t-thumb" aria-hidden="true">
+              <span class="t-no-badge">14542</span>
+              <img src="assets/train-thumb.jpg" alt="" loading="lazy" decoding="async" />
+            </span>
+            <span class="t-body">
+              <span class="t-name"><span class="no">14542</span>Example Express</span>
+              <span class="t-times"><b>05:10</b> <span class="stn">ASR</span> <span class="t-line" aria-hidden="true"></span> <span class="stn">NDLS</span> <b>07:12</b></span>
+              <span class="t-meta"><span class="cap">2h 02m</span><span class="cap hot">3A</span><span class="cap ok">RAC 7</span></span>
+              <span class="t-link">View details →</span>
+            </span>
+          </button>
+        </li>
+        <li>
+          <button class="tcard-more" type="button" data-go="chat.html">
+            <span class="ico" aria-hidden="true"><svg class="i"><use href="#i-train"/></svg></span>
+            More trains in chat →
+          </button>
+        </li>
+      </ul>
+      <p class="sample-note">Sample cards — layout only. Live results appear from verified railway sources inside chat.</p>
+    </section>
+
+    <!-- ══ LIVE STATUS STRIP ══ -->
+    <button class="live-strip" type="button" data-q="Meri train ka live status batao">
+      <span class="live-ico" aria-hidden="true"><svg class="i"><use href="#i-bolt"/></svg></span>
+      <span style="min-width:0">
+        <b>Train kahan tak pahunchi?</b>
+        <span>Live running status poochho — “12014 abhi kahan hai?”</span>
+      </span>
+      <span class="live-arrow" aria-hidden="true">→</span>
+    </button>
+
+    <footer class="foot">
+      <span><b>BookKaro AI</b> — independent railway assistant, not an official booking portal.</span>
+      <a href="privacy.html">Privacy</a>·<a href="terms.html">Terms</a>
+    </footer>
+  </div>
+
+  <!-- ── bottom navigation ── -->
+  <nav class="bottom-nav" aria-label="App navigation">
+    <button class="bn-item" type="button" aria-current="page" data-nav="home"><span class="bn-ico" aria-hidden="true"><svg class="i"><use href="#i-home"/></svg></span>Home</button>
+    <button class="bn-item" type="button" data-q="Meri bookings dikhao"><span class="bn-ico" aria-hidden="true"><svg class="i"><use href="#i-ticket"/></svg></span>Bookings</button>
+    <button class="bn-item" type="button" data-q="Mera wallet balance dikhao"><span class="bn-ico" aria-hidden="true"><svg class="i"><use href="#i-wallet"/></svg></span>Wallet</button>
+    <button class="bn-item" type="button" id="bn-profile"><span class="bn-ico" aria-hidden="true"><svg class="i"><use href="#i-user"/></svg></span>Profile</button>
   </nav>
-  <div class="nav-right">
-    <button class="icon-btn m-only" id="mic-nav" type="button" aria-label="Talk to BookKaro">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" stroke="currentColor" stroke-width="1.8"/><path d="M7 11a5 5 0 0 0 10 0M12 16v4M9 20h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </button>
-    <a class="btn primary sm" href="chat.html"><span class="m-only">Ask AI</span><span class="desk-only">Ask AI</span></a>
-    <button class="btn ghost sm desk-only" id="login-open" type="button">Login</button>
-    <button class="icon-btn menu-btn m-only" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="drawer">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-  <div class="drawer" id="drawer" role="menu" aria-label="Menu">
-    <a href="index.html" role="menuitem"><i aria-hidden="true">🏠</i> Home</a>
-    <a href="chat.html" role="menuitem"><i aria-hidden="true">💬</i> Chat</a>
-    <a href="chat.html?q=meri%20bookings%20dikhao" role="menuitem"><i aria-hidden="true">🎫</i> My Bookings</a>
-    <a href="chat.html?q=mera%20wallet%20batao" role="menuitem"><i aria-hidden="true">👛</i> Wallet</a>
-    <button type="button" id="login-open-m" role="menuitem"><i aria-hidden="true">👤</i> Login / Profile</button>
-  </div>
-</header>
-
-<main>
-<section class="hero" id="top">
-  <div class="wrap hero-row">
-    <div class="hero-copy">
-      <div class="eyebrow">
-        <span class="pill wait" id="health"><i aria-hidden="true"></i><span id="health-text">BookKaro AI</span></span>
-        <span class="pill ghosty">Bolkar ya type karke poochho</span>
-      </div>
-
-      <h1>Where are<br /><em>you going?</em></h1>
-      <p class="sub">Ask BookKaro to find trains, check live status, compare trains, check fares, PNR and more — naturally.</p>
-      <p class="hinglish">Ask me anything about trains — हिंदी · Hinglish · English.</p>
-
-      <div class="assistant" id="assistant" data-state="idle">
-        <div class="a-head">
-          <span class="orb" id="mini-orb" aria-hidden="true"></span>
-          <div class="a-id">
-            <b>BookKaro AI</b>
-            <span class="status" id="ai-status" role="status" aria-live="polite">Ask BookKaro anything</span>
-          </div>
-          <span class="langs">हिंदी · EN</span>
-        </div>
-
-        <div class="modes" role="group" aria-label="How do you want to ask?">
-          <button type="button" id="mode-text" aria-pressed="true">💬 Type</button>
-          <button type="button" id="mode-voice" aria-pressed="false">🎙 Voice</button>
-        </div>
-
-        <form class="composer" id="form">
-          <div class="c-row">
-            <label class="sr" for="query">Ask BookKaro anything about your journey</label>
-            <textarea id="query" name="query" rows="2" placeholder="Ask BookKaro anything about your journey…" autocomplete="off" spellcheck="false"></textarea>
-            <button class="icon mic" id="mic" type="button" aria-label="Start voice" aria-pressed="false" title="Talk to BookKaro">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" stroke="currentColor" stroke-width="1.8"/><path d="M7 11a5 5 0 0 0 10 0M12 16v4M9 20h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-            </button>
-            <button class="icon send" id="send" type="submit" aria-label="Send to BookKaro">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-          </div>
-          <div class="c-foot">
-            <span><kbd>Enter</kbd> bhejein · <kbd>Shift</kbd>+<kbd>Enter</kbd> nayi line</span>
-            <span style="margin-left:auto">No app install needed</span>
-          </div>
-        </form>
-
-        <div class="voicebar" id="voicebar">
-          <span class="orb big-orb" aria-hidden="true"></span>
-          <p><b>Tap to speak</b> — “Kal Amritsar se Delhi jaana hai”</p>
-          <button class="btn primary talk" id="talk" type="button">🎙 Start voice</button>
-        </div>
-
-        <div class="chips" aria-label="Quick questions">
-          <button class="chip" type="button" data-q="Kal Amritsar se Delhi jaana hai">🚆 Find a train</button>
-          <button class="chip" type="button" data-q="12014 abhi kahan hai?">📍 Live status</button>
-          <button class="chip" type="button" data-q="Kaunsi train fastest hai?">⚡ Fastest train</button>
-          <button class="chip" type="button" data-q="12014 ka fare batao">💰 Check fare</button>
-          <button class="chip" type="button" data-q="Mera PNR check karo">🎫 Check PNR</button>
-          <button class="chip" type="button" data-q="CC kya hota hai?">💡 Railway questions</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="visual">
-      <div class="frame">
-        <img class="train" src="assets/hero-train-bookkaro.jpg" width="1500" height="818" alt="BookKaro — modern Indian train at golden hour" fetchpriority="high" decoding="async" />
-      </div>
-      <span class="v-tag" aria-hidden="true">Just ask</span>
-      <aside class="float">
-        <div class="kicker">Sample layout · not live data</div>
-        <strong>Your AI railway assistant</strong>
-        <p>Ask in one line — results come back as clean train cards, never a form.</p>
-      </aside>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="capabilities">
-  <div class="wrap">
-    <div class="head center">
-      <div class="kicker">What BookKaro can do</div>
-      <h2>One assistant. Every railway question.</h2>
-      <p>You don’t need to know how railway systems work. Tap one of these and BookKaro carries on in chat.</p>
-    </div>
-    <ul class="rail cap-rail to-grid c3 edge">
-      <li><a class="card cap-card" href="chat.html?q=Kal%20Amritsar%20se%20Delhi%20jaana%20hai">
-        <div class="ico">🚆</div><h3>Find Trains</h3><p>Tell me where you’re going.</p><span class="go" aria-hidden="true">→</span></a></li>
-      <li><a class="card cap-card" href="chat.html?q=12014%20abhi%20kahan%20hai%3F">
-        <div class="ico">📍</div><h3>Live Status</h3><p>Know where your train is right now.</p><span class="go" aria-hidden="true">→</span></a></li>
-      <li><a class="card cap-card" href="chat.html?q=Kaunsi%20train%20fastest%20hai%3F">
-        <div class="ico">⚡</div><h3>Compare Trains</h3><p>Find the fastest or shortest journey.</p><span class="go" aria-hidden="true">→</span></a></li>
-      <li><a class="card cap-card" href="chat.html?q=Fare%20aur%20availability%20check%20karo">
-        <div class="ico">💰</div><h3>Fare &amp; Availability</h3><p>Check verified railway data.</p><span class="go" aria-hidden="true">→</span></a></li>
-      <li><a class="card cap-card" href="chat.html?q=Mera%20PNR%20check%20karo">
-        <div class="ico">🎫</div><h3>PNR &amp; Bookings</h3><p>Manage your journey naturally.</p><span class="go" aria-hidden="true">→</span></a></li>
-      <li><a class="card cap-card" href="chat.html?q=RAC%20aur%20WL%20kya%20hot%20hai">
-        <div class="ico">💡</div><h3>Railway Knowledge</h3><p>Ask anything about RAC, WL, CC, Tatkal and more.</p><span class="go" aria-hidden="true">→</span></a></li>
-    </ul>
-  </div>
-</section>
-
-<section class="section preview" id="preview">
-  <div class="wrap">
-    <div class="head center">
-      <span class="note">Example cards — layout only, not live railway information</span>
-      <h2>Your AI Railway Assistant</h2>
-      <p>Ask in one sentence. BookKaro replies with verified train cards — the same cards you get inside the chat.</p>
-    </div>
-    <div class="ask">“Kal Amritsar se Delhi jaana hai”</div>
-    <ul class="rail to-grid c2 edge" style="max-width:860px;margin-inline:auto">
-      <li><article class="tcard res-card">
-        <div class="t-head"><span class="t-no">12014</span><span class="t-name">Amritsar Shatabdi</span></div>
-        <div class="t-times"><span>ASR → NDLS</span><span><b>04:55</b> → <b>06:57</b></span></div>
-        <div class="caps"><span class="cap hot">CC</span><span class="cap">EC</span><span class="cap">Sample</span></div>
-      </article></li>
-      <li><article class="tcard res-card">
-        <div class="t-head"><span class="t-no">14542</span><span class="t-name">Example Express</span></div>
-        <div class="t-times"><span>ASR → NDLS</span><span><b>05:10</b> → <b>07:12</b></span></div>
-        <div class="caps"><span class="cap hot">SL</span><span class="cap">3A</span><span class="cap">Sample</span></div>
-      </article></li>
-    </ul>
-    <p style="text-align:center;font-size:12px;color:var(--faint);margin-top:6px">
-      Live running, fares, PNR status and availability appear only when a verified data source returns them — BookKaro never guesses.
-    </p>
-  </div>
-</section>
-
-<section class="section steps" id="how">
-  <div class="wrap">
-    <div class="head center">
-      <div class="kicker">How it works</div>
-      <h2>Three steps. No forms.</h2>
-      <p>Simple on the surface. Careful with every railway fact.</p>
-    </div>
-    <ul class="rail fit" style="gap:10px">
-      <li class="step"><div class="ico">01</div><h3>Ask naturally</h3><p>Type or speak your question.</p></li>
-      <li class="step"><div class="ico">02</div><h3>BookKaro finds the right source</h3><p>BookKaro automatically uses the appropriate railway capability.</p></li>
-      <li class="step"><div class="ico">03</div><h3>Get a verified answer</h3><p>Live railway data stays provider-backed.</p></li>
-    </ul>
-  </div>
-</section>
-
-<section class="section trust" id="trust">
-  <div class="wrap">
-    <div class="trust-box">
-      <div class="trust-inner">
-        <div style="min-width:0">
-          <div class="kicker">Built for the journey</div>
-          <h2>Built for railway questions,<br />not just railway searches.</h2>
-        </div>
-        <div class="trust-side">
-        <ul class="checks">
-          <li><b>✓</b> Live railway information when available</li>
-          <li><b>✓</b> Verified train data</li>
-          <li><b>✓</b> Natural Hinglish conversations</li>
-          <li><b>✓</b> Voice + text interaction</li>
-          <li><b>✓</b> No guessing when data is unavailable</li>
-        </ul>
-        <div class="trust-cta">
-          <a class="btn primary" href="chat.html">Ask BookKaro</a>
-          <button class="btn ghost" id="voice-cta" type="button">🎙 Try voice</button>
-        </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap foot-row">
-    <span><b>BookKaro AI</b></span>
-    <span>An independent railway assistant — not an official booking portal. Information depends on verified data providers.</span>
-    <span class="sep" style="margin-left:auto"></span>
-    <a href="privacy.html">Privacy</a><span class="sep">·</span><a href="terms.html">Terms</a>
-  </div>
-</footer>
-</main>
-
-<div class="layer voice-layer" id="voice" data-state="idle" role="dialog" aria-modal="true" aria-labelledby="voice-title">
-  <div class="card-">
-    <button class="icon-btn close" id="voice-x" type="button" aria-label="Close voice">✕</button>
-    <div class="v-wrap">
-      <span class="ring"></span><span class="ring-2"></span>
-      <img src="assets/voice-orb.jpg" alt="" />
-    </div>
-    <h2 id="voice-title">Hi, main BookKaro hoon</h2>
-    <p id="voice-copy">Kahan jaana hai? Boliye — ya neeche type kar lijiye.</p>
-    <div class="heard" id="voice-heard" aria-live="polite"></div>
-    <div class="wave" id="wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
-    <div class="voice-actions">
-      <button class="btn ghost" id="voice-cancel" type="button">Cancel</button>
-      <button class="btn primary" id="voice-stop" type="button">Done · Send</button>
-    </div>
-    <p style="margin-top:14px;font-size:12px;opacity:.75">Mic permission is asked only when you tap start. Nothing is sent until you press Done.</p>
-  </div>
 </div>
 
-<div class="layer login-layer" id="login" role="dialog" aria-modal="true" aria-labelledby="login-title">
-  <div class="login-card">
+<!-- login / profile — existing guest flow -->
+<div class="layer" id="login" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="sheet">
     <button class="icon-btn close" id="login-close" type="button" aria-label="Close">✕</button>
     <h2 id="login-title">Login / Profile</h2>
     <p>No account is needed to ask BookKaro. Chat, bookings and wallet live in the same assistant — continue as a guest.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
+    <div class="row">
       <a class="btn primary" href="chat.html">Continue to chat</a>
       <button class="btn ghost" id="login-close-2" type="button">Not now</button>
     </div>
@@ -758,34 +624,35 @@
 <script>
 (function () {
   'use strict';
-  var $ = function (id) { return document.getElementById(id); };
+  function $(id) { return document.getElementById(id); }
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  var input = $('query'), form = $('form'), statusEl = $('ai-status'), assistant = $('assistant'), orb = $('mini-orb');
-  var voiceEl = $('voice'), voiceTitle = $('voice-title'), voiceCopy = $('voice-copy'), voiceHeard = $('voice-heard');
-  var micBtn = $('mic'), sendBtn = $('send');
-  var STATE = { idle: 'Ask BookKaro anything', listening: 'Listening...', thinking: 'Finding the best answer...', result: 'Here’s what I found', error: 'Sorry, I couldn’t fetch that right now.' };
+  var composer = $('composer'), input = $('query'), form = $('form'),
+      statusEl = $('status'), micBtn = $('mic'), sendBtn = $('send'),
+      heard = $('heard'), login = $('login');
+  var STATE = {
+    idle: 'Ask away',
+    listening: 'Listening…',
+    thinking: 'Thinking…',
+    error: 'Type instead'
+  };
 
-  /* ── orb state machine (shared by the card and the voice overlay) ── */
-  function setState(s, extra) {
+  function setState(s) {
     s = s || 'idle';
-    assistant.dataset.state = s;
-    voiceEl.dataset.state = s;
-    orb.className = 'orb' + (s === 'listening' ? ' is-listening' : s === 'thinking' ? ' is-thinking' : s === 'result' ? ' is-result' : s === 'error' ? ' is-error' : '');
-    statusEl.textContent = extra && extra.status ? extra.status : (STATE[s] || STATE.idle);
-    statusEl.style.color = s === 'error' ? '#B4552F' : s === 'result' ? 'var(--teal)' : s === 'thinking' ? 'var(--orange-deep)' : 'var(--teal)';
-    if (extra && extra.title) voiceTitle.textContent = extra.title;
-    if (extra && extra.copy) voiceCopy.textContent = extra.copy;
+    composer.dataset.state = s;
+    statusEl.textContent = STATE[s] || STATE.idle;
+    statusEl.className = 'a-status' + (s === 'thinking' ? ' think' : s === 'error' ? ' err' : '');
+    micBtn.setAttribute('aria-pressed', s === 'listening' ? 'true' : 'false');
   }
 
-  /* ── rotating placeholder (typewriter) ── */
+  /* ── rotating Hinglish placeholders ── */
   var PH = [
-    'Kal Amritsar se Delhi jaana hai',
-    '12014 abhi kahan hai?',
+    'Kal Amritsar se Delhi train chahiye',
+    '12014 ka live status batao',
     'Kaunsi train fastest hai?',
-    '12014 ka fare batao',
+    '12014 ka fare?',
     'CC kya hota hai?',
-    'Mera PNR check karo'
+    'PNR check karo'
   ];
   var pi = 0, ci = 0, deleting = false, typingTimer = null;
   function tick() {
@@ -793,119 +660,73 @@
     var full = PH[pi % PH.length];
     if (!deleting) {
       ci++;
-      input.placeholder = '“' + full.slice(0, ci) + (ci < full.length ? '▌' : '”');
-      if (ci >= full.length) { deleting = true; typingTimer = setTimeout(tick, 2400); return; }
+      input.placeholder = full.slice(0, ci) + (ci < full.length ? '▌' : '');
+      if (ci >= full.length) { deleting = true; typingTimer = setTimeout(tick, 2200); return; }
     } else {
       ci -= 4;
       if (ci <= 0) { ci = 0; deleting = false; pi++; }
-      input.placeholder = '“' + full.slice(0, ci) + '▌';
+      input.placeholder = full.slice(0, ci) + '▌';
     }
     typingTimer = setTimeout(tick, deleting ? 22 : 46);
   }
   if (reduce) {
-    var pi2 = 0;
+    var pj = 0;
     setInterval(function () {
       if (document.activeElement === input || input.value) return;
-      pi2 = (pi2 + 1) % PH.length;
-      input.placeholder = PH[pi2];
+      pj = (pj + 1) % PH.length;
+      input.placeholder = PH[pj];
     }, 3600);
   } else { tick(); }
-
-  /* ── autosize ── */
-  function grow() {
-    input.style.height = 'auto';
-    input.style.height = Math.min(168, Math.max(46, input.scrollHeight)) + 'px';
-  }
-  input.addEventListener('input', function () { grow(); if (typingTimer) { clearTimeout(typingTimer); } });
+  input.addEventListener('input', function () { if (typingTimer) clearTimeout(typingTimer); });
   input.addEventListener('blur', function () { if (typingTimer) clearTimeout(typingTimer); tick(); });
 
   /* ── hand the question to the existing chat flow ── */
   var sent = false;
   function go(q) {
-    q = (q || '').trim();
     if (sent) return;
     sent = true;
-    if (q) location.href = 'chat.html?q=' + encodeURIComponent(q.slice(0, 300));
-    else location.href = 'chat.html';
+    location.href = q ? 'chat.html?q=' + encodeURIComponent(q.slice(0, 300)) : 'chat.html';
   }
   function submitQuery(q) {
-    if (!q || !q.trim()) { input.focus(); return; }
-    if (!reduce) { sendBtn.classList.add('go'); form.classList.add('sending'); }
-    sendBtn.disabled = true;
+    q = (q || '').trim();
+    if (!q) { input.focus(); return; }
+    if (!reduce) { sendBtn.classList.add('go'); sendBtn.disabled = true; }
     setState('thinking');
-    setTimeout(function () { go(q); }, reduce ? 0 : 300);
+    setTimeout(function () { go(q); }, reduce ? 0 : 320);
   }
   form.addEventListener('submit', function (e) { e.preventDefault(); submitQuery(input.value); });
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitQuery(input.value); }
   });
-  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function (btn) {
-    btn.addEventListener('click', function () {
-      var q = btn.getAttribute('data-q') || '';
-      input.value = q; grow(); submitQuery(q);
-    });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-q]'), function (btn) {
+    btn.addEventListener('click', function () { submitQuery(btn.getAttribute('data-q') || ''); });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('[data-go]'), function (btn) {
+    btn.addEventListener('click', function () { go(); });
   });
 
-  /* ── two equal modes: type / voice ── */
-  var modeText = $('mode-text'), modeVoice = $('mode-voice'), voicebar = $('voicebar');
+  /* ── type / voice mode pills ── */
+  var modeText = $('mode-text'), modeVoice = $('mode-voice');
   function pickMode(m) {
     var isVoice = m === 'voice';
     modeVoice.setAttribute('aria-pressed', String(isVoice));
     modeText.setAttribute('aria-pressed', String(!isVoice));
-    voicebar.classList.toggle('on', isVoice);
-    form.style.display = isVoice ? 'none' : '';
-    if (!isVoice) { input.focus(); }
+    if (isVoice) startVoice();
   }
   modeText.addEventListener('click', function () { pickMode('text'); });
-  modeVoice.addEventListener('click', function () { pickMode('voice'); startVoice(); });
-  $('talk').addEventListener('click', startVoice);
-  $('voice-cta').addEventListener('click', function () { pickMode('voice'); startVoice(); });
+  modeVoice.addEventListener('click', function () { pickMode('voice'); });
+  micBtn.addEventListener('click', startVoice);
 
-  /* ── drawer ── */
-  var drawer = $('drawer'), menuBtn = $('menu-btn');
-  function closeDrawer() { drawer.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); }
-  menuBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    var open = drawer.classList.toggle('open');
-    menuBtn.setAttribute('aria-expanded', String(open));
-  });
-  document.addEventListener('click', function (e) { if (!drawer.contains(e.target)) closeDrawer(); });
-
-  /* ── login (existing flow: guest continues into chat) ── */
-  var login = $('login');
-  function openLogin() { login.classList.add('open'); document.body.classList.add('lock'); closeDrawer(); }
-  function closeLogin() { login.classList.remove('open'); document.body.classList.remove('lock'); }
-  $('login-open').addEventListener('click', openLogin);
-  $('login-open-m').addEventListener('click', openLogin);
-  $('login-close').addEventListener('click', closeLogin);
-  $('login-close-2').addEventListener('click', closeLogin);
-  login.addEventListener('click', function (e) { if (e.target === login) closeLogin(); });
-
-  /* ── voice: listening → transcript → back into the same chat ── */
+  /* ── voice: compact in-card AI listening state ── */
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var rec = null;
-  function lock(on) { document.body.classList.toggle('lock', on); }
-  var lastFocus = null;
-  function openVoice() {
-    lastFocus = document.activeElement;
-    voiceEl.classList.add('open'); lock(true); micBtn.setAttribute('aria-pressed', 'true');
-    setTimeout(function () { try { $('voice-x').focus({ preventScroll: true }); } catch (err) {} }, 30);
-  }
-  function closeVoice() {
-    try { if (rec) rec.abort(); } catch (err) {}
-    rec = null;
-    voiceEl.classList.remove('open'); lock(false);
-    micBtn.setAttribute('aria-pressed', 'false');
-    voiceHeard.textContent = '';
-    setState('idle');
-    if (!input.value) pickMode('text');
-    try { if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); } catch (err) {}
-  }
+  var rec = null, lastFocus = null;
+  function stopRec() { try { if (rec) rec.abort(); } catch (e) {} rec = null; }
   function startVoice() {
-    openVoice();
+    lastFocus = document.activeElement;
+    heard.textContent = 'Speak to BookKaro — train, status, fare, PNR…';
+    setState('listening');
     if (!SR) {
-      setState('error', { title: 'Voice is not ready here', copy: 'This browser has no speech input — type your question instead and BookKaro will answer right away.' });
-      voiceHeard.textContent = '';
+      heard.textContent = 'Voice is not ready in this browser — type your question instead.';
       return;
     }
     try {
@@ -914,63 +735,66 @@
       rec.interimResults = true;
       rec.maxAlternatives = 1;
       rec.continuous = true;
-      rec.onstart = function () { setState('listening', { title: 'Listening…', copy: 'Boliye — train, status, fare, PNR, kuch bhi.' }); };
+      rec.onstart = function () { heard.textContent = 'Boliye — train, status, fare, PNR, kuch bhi…'; };
       rec.onresult = function (e) {
         var said = '';
         for (var i = e.resultIndex; i < e.results.length; i++) said += e.results[i][0].transcript;
-        voiceHeard.textContent = '“' + said + '”';
-        input.value = said; grow();
-        if (e.results[e.results.length - 1].isFinal) {
-          setState('result', { title: 'Here’s what I heard', copy: 'BookKaro will answer this in the chat.' });
-          setTimeout(function () {
-            setState('thinking', { title: 'Finding the best answer…', copy: said });
-            setTimeout(function () { closeVoice(); go(said); }, 420);
-          }, reduce ? 0 : 380);
+        heard.textContent = said ? '“' + said + '”' : heard.textContent;
+        input.value = said;
+        if (e.results[e.results.length - 1].isFinal && said.trim()) {
+          setTimeout(function () { stopRec(); setState('thinking'); setTimeout(function () { go(said); }, 420); }, reduce ? 0 : 380);
         }
       };
-      rec.onerror = function (e) {
-        var denied = e && e.error === 'not-allowed';
-        setState('error', {
-          title: 'Mic is not available',
-          copy: denied ? 'Microphone permission was blocked. Allow it in the browser, or just type below.' : 'I could not catch that — tap Done to send, or type instead.'
-        });
+      rec.onerror = function () {
+        heard.textContent = 'Mic not available — allow permission or type instead.';
+        setState('error');
       };
       rec.onend = function () { rec = null; };
       rec.start();
     } catch (err) {
-      setState('error', { title: 'Voice did not start', copy: 'Type your question instead — BookKaro answers the same way.' });
+      heard.textContent = 'Voice did not start — type your question instead.';
+      setState('error');
     }
   }
-  micBtn.addEventListener('click', startVoice);
-  $('mic-nav').addEventListener('click', function () { pickMode('voice'); startVoice(); });
-  $('voice-x').addEventListener('click', closeVoice);
-  $('voice-cancel').addEventListener('click', closeVoice);
-  $('voice-stop').addEventListener('click', function () {
-    try { if (rec) rec.stop(); } catch (err) {}
+  function closeVoice() {
+    stopRec();
+    setState('idle');
+    try { if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); } catch (e) {}
+  }
+  $('listen-cancel').addEventListener('click', closeVoice);
+  $('listen-send').addEventListener('click', function () {
+    stopRec();
     var q = (input.value || '').trim();
-    if (q) { closeVoice(); setState('thinking'); go(q); } else { closeVoice(); }
+    if (q) { setState('thinking'); setTimeout(function () { go(q); }, 250); }
+    else closeVoice();
   });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) stopRec(); });
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
-    if (voiceEl.classList.contains('open')) closeVoice();
+    if (composer.dataset.state === 'listening' || composer.dataset.state === 'error') closeVoice();
     if (login.classList.contains('open')) closeLogin();
-    closeDrawer();
   });
 
-  /* ── nav: elevation on scroll + honest service state ── */
-  var nav = $('nav');
-  addEventListener('scroll', function () { nav.classList.toggle('stuck', scrollY > 8); }, { passive: true });
+  /* ── login / profile (existing guest flow) ── */
+  function openLogin() { login.classList.add('open'); document.body.classList.add('lock'); }
+  function closeLogin() { login.classList.remove('open'); document.body.classList.remove('lock'); }
+  $('profile-btn').addEventListener('click', openLogin);
+  $('bn-profile').addEventListener('click', openLogin);
+  $('login-close').addEventListener('click', closeLogin);
+  $('login-close-2').addEventListener('click', closeLogin);
+  login.addEventListener('click', function (e) { if (e.target === login) closeLogin(); });
 
-  var health = $('health'), healthText = $('health-text');
-  function setHealth(cls, text) { health.className = 'pill ' + cls; healthText.textContent = text; }
+  /* ── honest backend state ── */
+  var net = $('net'), netText = $('net-text');
+  function setNet(cls, text) { net.className = 'net ' + cls; netText.textContent = text; }
   try {
     fetch('/api/health', { headers: { accept: 'application/json' } })
       .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function () { setHealth('', 'Online · ask away'); })
-      .catch(function () { setHealth('off', 'Offline · ask in chat'); });
-  } catch (err) { setHealth('wait', 'BookKaro AI'); }
+      .then(function () { setNet('ok', 'Online'); })
+      .catch(function () { setNet('off', 'Offline · chat'); });
+  } catch (err) { setNet('', 'Connecting…'); }
 
-  /* ── rails: drop the edge fade once you reach the end ── */
+  /* ── drop carousel edge fade at scroll end ── */
   Array.prototype.forEach.call(document.querySelectorAll('.rail'), function (r) {
     var check = function () {
       if (!r.classList.contains('edge')) return;
