@@ -19,3 +19,6 @@ coverage/
 .npm/
 .cache/
 .local/
+# talking-hero scratch + sandbox deps (large / regenerable)
+renders/frames/
+tools/*/node_modules/
