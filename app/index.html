@@ -1,9 +1,612 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BookKaro AI — Where are you going?</title><meta name="description" content="Your conversational AI railway assistant. Ask naturally in Hindi, Hinglish or English."><style>
-:root{--ink:#241b17;--muted:#766960;--orange:#f47727;--deep:#c84c0c;--cream:#fff9f1;--line:#eadfd3;--white:#fff;--teal:#167b70}*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--cream);line-height:1.5}a{text-decoration:none;color:inherit}button,input{font:inherit}.wrap{width:min(1160px,92vw);margin:auto}.nav{height:76px;display:flex;align-items:center;gap:30px}.brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:18px}.logo{width:38px;height:38px;border-radius:13px;display:grid;place-items:center;background:#241b17;color:#fff;font-size:19px}.brand small{display:block;color:var(--orange);font-size:9px;letter-spacing:1.5px;line-height:1}.links{display:flex;gap:27px;margin-left:auto;color:var(--muted);font-size:14px;font-weight:650}.btn{border:0;border-radius:999px;padding:12px 20px;font-weight:750;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.2s}.btn:hover{transform:translateY(-2px)}.primary{background:var(--orange);color:#fff;box-shadow:0 10px 22px #f4772745}.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}.hero{overflow:hidden;background:linear-gradient(112deg,#fffaf4 0%,#fff5e9 50%,#f99a4e 100%);min-height:610px}.hero-grid{display:grid;grid-template-columns:51% 49%;align-items:center;min-height:534px}.eyebrow{color:var(--deep);font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px}.eyebrow span{display:inline-block;width:8px;height:8px;background:var(--teal);border-radius:50%;margin-right:7px}h1{font-size:clamp(44px,6.2vw,76px);line-height:1.02;letter-spacing:-3.5px;max-width:570px}h1 em{font-style:normal;color:var(--orange)}.sub{font-size:17px;color:var(--muted);max-width:470px;margin:22px 0 28px}.assistant{max-width:550px;background:#fff;border:1px solid #eadfd3;border-radius:25px;padding:18px;box-shadow:0 22px 55px #8a461c1c}.assistant-head{display:flex;align-items:center;gap:10px;border-bottom:1px solid #f2eae1;padding-bottom:14px;font-size:14px}.ai-dot{width:33px;height:33px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 10%,#ffc27d 28%,var(--orange) 75%);display:grid;place-items:center;color:#fff;box-shadow:0 0 0 5px #f4772712,0 0 0 10px #f4772708;animation:orb 3s ease-in-out infinite}@keyframes orb{50%{box-shadow:0 0 0 8px #f4772712,0 0 0 15px #f4772705;transform:scale(1.04)}}.online{font-size:11px;color:var(--teal);display:block}.online:before{content:'●';margin-right:4px}.composer{border:1.5px solid #e1d4c8;border-radius:19px;padding:14px;margin-top:16px;display:flex;gap:10px;align-items:end;transition:.2s}.composer:focus-within{border-color:var(--orange);box-shadow:0 0 0 4px #f4772714}.composer textarea{resize:none;border:0;outline:0;flex:1;color:var(--ink);min-height:52px;font-size:16px}.composer textarea::placeholder{color:#aa9b91}.icon{width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center}.mic{background:#fff4e9;color:var(--deep)}.send{background:var(--orange);color:#fff}.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.chip{border:1px solid var(--line);background:#fff;padding:8px 12px;border-radius:999px;color:var(--muted);font-size:12px;cursor:pointer}.chip:hover{border-color:var(--orange);color:var(--deep);background:#fff4e9}.visual{height:430px;position:relative;display:grid;place-items:center}.glow{position:absolute;width:370px;height:370px;border-radius:50%;background:#ffca8c55;filter:blur(4px)}.train{position:relative;width:360px;height:210px;transform:perspective(500px) rotateY(-10deg) rotate(-2deg);filter:drop-shadow(0 28px 15px #8a3d1938)}.train:before{content:'';position:absolute;right:0;top:20px;width:285px;height:154px;border-radius:35px 50px 25px 10px;background:linear-gradient(180deg,#fff 0 34%,#34373b 35% 51%,#f17227 52% 66%,#fff 67%);border:5px solid #f5eee6}.train:after{content:'BOOKKARO  AI';position:absolute;right:24px;top:99px;color:#fff;font-size:12px;letter-spacing:2px;font-weight:800}.nose{position:absolute;right:0;bottom:37px;width:90px;height:85px;border-radius:12px 40px 20px 8px;background:linear-gradient(145deg,#fff,#e9e5e1);border:5px solid #eee8e0;z-index:2}.window{position:absolute;right:15px;top:12px;width:55px;height:35px;border-radius:8px;background:#172c38;border:3px solid #d9cfc5}.wheel{position:absolute;bottom:15px;width:43px;height:43px;border-radius:50%;background:#2b2928;border:9px solid #d5cdc4;z-index:3}.w1{left:65px}.w2{right:88px}.rail{position:absolute;bottom:62px;width:430px;height:5px;background:#75655b;box-shadow:0 16px #a18d80}.section{padding:86px 0}.section-head{text-align:center;max-width:600px;margin:0 auto 42px}.section-head h2{font-size:clamp(28px,4vw,42px);letter-spacing:-1.5px}.section-head p{color:var(--muted);margin-top:10px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:25px;transition:.2s}.card:hover{transform:translateY(-5px);box-shadow:0 15px 35px #60432a12;border-color:#f5c49e}.card .num{color:var(--orange);font-size:12px;font-weight:850;background:#fff0e3;border-radius:9px;padding:7px 10px;display:inline-block;margin-bottom:22px}.card h3{font-size:18px;margin-bottom:7px}.card p{font-size:14px;color:var(--muted)}.steps{background:#251c18;color:#fff}.steps .section-head p{color:#cbbdb3}.steps .card{background:#332823;border-color:#4c3b31}.steps .card p{color:#cbbdb3}.steps .num{background:#f47727;color:#fff}.trust{background:#fff4e8;border-radius:28px;padding:50px;text-align:center}.checks{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;color:var(--muted);font-size:14px;margin-top:24px}.checks b{color:var(--teal);margin-right:5px}footer{text-align:center;padding:35px;color:#9b8d83;font-size:12px;border-top:1px solid var(--line)}@media(max-width:820px){.links,.nav>.primary{display:none}.nav:after{content:'☰';margin-left:auto;font-size:21px}.hero-grid{display:flex;flex-direction:column;align-items:stretch;padding-top:55px}.hero-copy{order:0}h1{font-size:51px;letter-spacing:-2.5px}.visual{height:285px;order:1}.train{transform:scale(.75) perspective(500px) rotateY(-10deg) rotate(-2deg)}.grid{grid-template-columns:1fr}.section{padding:64px 0}.trust{padding:35px 20px}.assistant{margin-bottom:10px}}
-</style></head><body><header class="wrap nav"><a class="brand" href="/"><span class="logo">✦</span><span>BookKaro<small>AI ASSISTANT</small></span></a><nav class="links"><a href="#capabilities">Capabilities</a><a href="#how">How it works</a><a href="#trust">Trust</a></nav><a class="btn primary" href="chat.html">Ask BookKaro <span>↗</span></a></header>
-<section class="hero"><div class="wrap hero-grid"><div class="hero-copy"><div class="eyebrow"><span></span>Online · Hinglish ready</div><h1>Where are<br><em>you going?</em></h1><p class="sub">Ask BookKaro to find trains, check live status, compare fares, check PNR and more — naturally.</p><div class="assistant"><div class="assistant-head"><span class="ai-dot">✦</span><div><b>BookKaro AI</b><span class="online">Ready when you are</span></div><span style="margin-left:auto;color:#9b8d83;font-size:12px">हिंदी · Hinglish · English</span></div><form class="composer" id="form"><textarea id="query" rows="2" placeholder="Ask BookKaro anything about your journey…" aria-label="Ask BookKaro"></textarea><button class="icon mic" id="mic" type="button" title="Voice input" hidden>🎙</button><button class="icon send" type="submit" aria-label="Send">➤</button></form><div class="chips"><button class="chip" data-q="Find a train">🚆 Find a train</button><button class="chip" data-q="Live train status">📍 Live status</button><button class="chip" data-q="Which train is fastest?">⚡ Fastest train</button><button class="chip" data-q="Check fare">💰 Check fare</button><button class="chip" data-q="Check my PNR">🎫 PNR</button></div></div></div><div class="visual" aria-label="Premium modern train illustration"><div class="glow"></div><div class="rail"></div><div class="train"><div class="nose"><div class="window"></div></div><div class="wheel w1"></div><div class="wheel w2"></div></div></div></div></div></section>
-<section class="section" id="capabilities"><div class="wrap"><div class="section-head"><h2>One assistant. Every railway question.</h2><p>Bolkar ya type karke poochho — BookKaro keeps the journey simple.</p></div><div class="grid"><a class="card" href="chat.html?q=Find+a+train"><span class="num">01</span><h3>Find Trains</h3><p>Tell me where you're going and I'll help you explore your options.</p></a><a class="card" href="chat.html?q=Live+train+status"><span class="num">02</span><h3>Live Status</h3><p>Know where your train is right now, when provider data is available.</p></a><a class="card" href="chat.html?q=Compare+trains"><span class="num">03</span><h3>Compare Trains</h3><p>Find the fastest or shortest journey for your plans.</p></a><a class="card" href="chat.html?q=Check+fare+and+availability"><span class="num">04</span><h3>Fare & Availability</h3><p>Check provider-backed railway information before you decide.</p></a><a class="card" href="chat.html?q=Check+my+PNR"><span class="num">05</span><h3>PNR & Bookings</h3><p>Manage your journey naturally, one question at a time.</p></a><a class="card" href="chat.html?q=What+does+RAC+mean"><span class="num">06</span><h3>Railway Knowledge</h3><p>Ask about RAC, WL, CC, Tatkal and more.</p></a></div></div></section>
-<section class="section steps" id="how"><div class="wrap"><div class="section-head"><h2>From question to journey.</h2><p>Simple on the surface, thoughtful underneath.</p></div><div class="grid"><div class="card"><span class="num">01</span><h3>Ask naturally</h3><p>Type or speak your question in the language that feels right.</p></div><div class="card"><span class="num">02</span><h3>BookKaro finds the right source</h3><p>Your assistant connects your question to the relevant railway capability.</p></div><div class="card"><span class="num">03</span><h3>Get a verified answer</h3><p>Provider-backed information stays clear, with no guessing when data is unavailable.</p></div></div></div></section>
-<section class="section" id="trust"><div class="wrap"><div class="trust"><div class="eyebrow">BUILT FOR THE JOURNEY</div><h2>Built for railway questions,<br>not just railway searches.</h2><div class="checks"><span><b>✓</b>Live information when available</span><span><b>✓</b>Natural Hinglish conversations</span><span><b>✓</b>Voice + text interaction</span><span><b>✓</b>No guessing</span></div><a class="btn primary" style="margin-top:30px" href="chat.html">Ask BookKaro ↗</a></div></div></section><footer>BookKaro AI is an independent assistant — not an official IRCTC or Indian Railways product. Information depends on verified data providers. · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></footer>
-<script>(function(){var input=document.getElementById('query');function go(q){q=(q||'').trim();if(q)location.href='chat.html?q='+encodeURIComponent(q.slice(0,300))}document.getElementById('form').onsubmit=function(e){e.preventDefault();go(input.value)};document.querySelectorAll('.chip').forEach(function(b){b.onclick=function(){input.value=b.dataset.q;input.focus()}});var SR=window.SpeechRecognition||window.webkitSpeechRecognition,m=document.getElementById('mic');if(SR){m.hidden=false;m.onclick=function(){var r=new SR();r.lang='hi-IN';r.onstart=function(){m.textContent='◉'};r.onresult=function(e){input.value=e.results[0][0].transcript;m.textContent='🎙';input.focus()};r.onend=function(){m.textContent='🎙'};r.start()}}})();</script></body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>BookKaro AI — Where are you going?</title>
+<meta name="description" content="Just tell BookKaro where you want to go. Conversational AI railway assistant — Hindi, Hinglish and English." />
+<style>
+  :root {
+    --ink: #1C1612;
+    --ink-2: #3A322C;
+    --muted: #6F645B;
+    --faint: #9A8C82;
+    --orange: #EE7A2D;
+    --orange-deep: #D45F14;
+    --amber: #F4A15A;
+    --cream: #FFF8F1;
+    --cream-2: #FFF1E4;
+    --white: #FFFFFF;
+    --line: #EDE3D6;
+    --charcoal: #16110E;
+    --charcoal-2: #241C18;
+    --teal: #167B70;
+    --shadow: 0 18px 50px rgba(80, 42, 18, .10);
+    --radius: 24px;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button, input, textarea { font: inherit; }
+  img { max-width: 100%; display: block; }
+  .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+  /* ── nav ── */
+  .nav {
+    position: sticky; top: 0; z-index: 40;
+    height: 72px; display: flex; align-items: center; gap: 22px;
+    background: rgba(255,248,241,.86); backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(237,227,214,.7);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; letter-spacing: -.3px; }
+  .mark {
+    width: 36px; height: 36px; border-radius: 12px;
+    background: radial-gradient(circle at 35% 30%, #fff 0 10%, #FFC27D 28%, var(--orange) 76%);
+    box-shadow: 0 6px 16px rgba(238,122,45,.28);
+  }
+  .brand small { display: block; font-size: 9px; letter-spacing: 1.6px; color: var(--orange); font-weight: 800; line-height: 1; margin-top: 1px; }
+  .links { display: flex; gap: 26px; margin-left: 18px; color: var(--muted); font-size: 14px; font-weight: 650; }
+  .links a:hover { color: var(--ink); }
+  .nav-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .btn {
+    border: 0; border-radius: 999px; padding: 11px 18px; font-weight: 750; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px; transition: transform .18s, background .18s, box-shadow .18s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .primary { background: var(--orange); color: #fff; box-shadow: 0 10px 22px rgba(238,122,45,.32); }
+  .primary:hover { background: var(--orange-deep); }
+  .ghost { background: var(--white); border: 1px solid var(--line); color: var(--ink); }
+  .icon-btn {
+    width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line);
+    background: var(--white); cursor: pointer; display: grid; place-items: center; color: var(--ink);
+  }
+  .menu-btn { display: none; }
+  .drawer {
+    display: none; position: absolute; right: 20px; top: 64px; background: var(--white);
+    border: 1px solid var(--line); border-radius: 16px; padding: 10px; min-width: 200px;
+    box-shadow: var(--shadow);
+  }
+  .drawer a, .drawer button {
+    display: block; width: 100%; text-align: left; background: none; border: 0;
+    padding: 10px 12px; border-radius: 10px; font-weight: 650; color: var(--ink-2); cursor: pointer;
+  }
+  .drawer a:hover, .drawer button:hover { background: var(--cream-2); }
+
+  /* ── hero ── */
+  .hero {
+    position: relative; overflow: hidden;
+    background: linear-gradient(115deg, #FFF9F3 0%, #FFE8D2 42%, #F6A15C 78%, #EE7A2D 100%);
+    min-height: min(760px, calc(100vh - 72px));
+  }
+  .hero-grid {
+    display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+    align-items: center; min-height: inherit; padding: 28px 0 36px; gap: 12px;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    color: var(--orange-deep); font-size: 12px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+  .eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); display: block; }
+  h1 {
+    font-size: clamp(44px, 6.4vw, 76px); line-height: .98; letter-spacing: -2.8px;
+    font-weight: 800; max-width: 12ch;
+  }
+  h1 em { font-style: normal; color: var(--orange-deep); }
+  .sub { font-size: 17.5px; color: var(--ink-2); max-width: 460px; margin: 18px 0 26px; }
+  .hinglish { color: var(--muted); font-size: 14.5px; margin: -12px 0 22px; }
+
+  .assistant {
+    max-width: 560px; background: var(--white); border: 1px solid rgba(237,227,214,.9);
+    border-radius: 28px; padding: 18px; box-shadow: var(--shadow);
+  }
+  .assistant-head { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #F3EAE1; }
+  .orb {
+    width: 42px; height: 42px; border-radius: 50%; position: relative;
+    background: radial-gradient(circle at 38% 32%, #fff 0 12%, #FFD19A 30%, var(--orange) 72%);
+    box-shadow: 0 0 0 6px rgba(238,122,45,.12), 0 0 0 12px rgba(238,122,45,.06);
+    animation: orbIdle 3s ease-in-out infinite;
+  }
+  .orb::after {
+    content: ""; position: absolute; inset: -10px; border-radius: 50%;
+    border: 1px solid rgba(238,122,45,.18);
+  }
+  @keyframes orbIdle {
+    50% { box-shadow: 0 0 0 9px rgba(238,122,45,.12), 0 0 0 18px rgba(238,122,45,.05); transform: scale(1.04); }
+  }
+  .assistant-head b { display: block; font-size: 14.5px; }
+  .status { font-size: 12px; color: var(--teal); font-weight: 700; }
+  .langs { margin-left: auto; font-size: 11.5px; color: var(--faint); font-weight: 650; }
+
+  .composer {
+    margin-top: 14px; border: 1.5px solid var(--line); border-radius: 20px; padding: 12px 12px 12px 16px;
+    display: flex; gap: 8px; align-items: flex-end; background: #FFFcf8; transition: border-color .2s, box-shadow .2s;
+  }
+  .composer:focus-within { border-color: var(--orange); box-shadow: 0 0 0 4px rgba(238,122,45,.12); }
+  .composer textarea {
+    flex: 1; border: 0; outline: 0; resize: none; background: transparent; min-height: 54px;
+    color: var(--ink); font-size: 16px; line-height: 1.45;
+  }
+  .composer textarea::placeholder { color: #B3A398; }
+  .icon {
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    display: grid; place-items: center; flex: 0 0 auto; transition: transform .15s, background .15s;
+  }
+  .icon:hover { transform: scale(1.05); }
+  .mic { background: #FFF1E4; color: var(--orange-deep); }
+  .mic[aria-pressed="true"] { background: var(--orange); color: #fff; }
+  .send { background: var(--orange); color: #fff; box-shadow: 0 8px 16px rgba(238,122,45,.28); }
+  .send:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--white); padding: 8px 12px; border-radius: 999px;
+    color: var(--ink-2); font-size: 12.5px; font-weight: 650; cursor: pointer; transition: .15s;
+  }
+  .chip:hover { border-color: var(--orange); color: var(--orange-deep); background: #FFF4E9; }
+
+  .visual { position: relative; min-height: 520px; display: grid; place-items: center; }
+  .visual img.train {
+    width: 100%; height: 100%; object-fit: cover; object-position: 62% 54%;
+    min-height: 520px; mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 100%);
+  }
+  .sample-float {
+    position: absolute; left: 18px; bottom: 28px; width: min(280px, 86%);
+    background: rgba(255,255,255,.94); border: 1px solid rgba(255,255,255,.7);
+    border-radius: 18px; padding: 14px 16px; box-shadow: 0 16px 40px rgba(70,30,10,.18);
+    backdrop-filter: blur(10px);
+  }
+  .sample-float .kicker { font-size: 10px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--faint); }
+  .sample-float strong { display: block; margin: 4px 0 2px; font-size: 14.5px; }
+  .sample-float p { font-size: 12.5px; color: var(--muted); }
+
+  /* ── sections ── */
+  .section { padding: 88px 0; }
+  .section-head { text-align: center; max-width: 620px; margin: 0 auto 42px; }
+  .section-head h2 { font-size: clamp(28px, 4vw, 42px); letter-spacing: -1.4px; line-height: 1.15; }
+  .section-head p { color: var(--muted); margin-top: 10px; font-size: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 22px; padding: 24px;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  a.card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: #F5C49E; }
+  .card .ico {
+    width: 42px; height: 42px; border-radius: 12px; background: #FFF1E4; color: var(--orange-deep);
+    display: grid; place-items: center; font-size: 18px; margin-bottom: 18px;
+  }
+  .card h3 { font-size: 18px; margin-bottom: 6px; }
+  .card p { font-size: 14px; color: var(--muted); }
+
+  .preview { background: var(--white); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .note {
+    display: inline-block; font-size: 11.5px; font-weight: 750; letter-spacing: .4px;
+    color: var(--orange-deep); background: #FFF1E4; border-radius: 999px; padding: 5px 10px; margin-bottom: 10px;
+  }
+  .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 820px; margin: 0 auto; }
+  .tcard { border: 1px solid var(--line); background: #FFFcf8; border-radius: 18px; padding: 16px 18px; }
+  .t-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .t-no { font-weight: 850; font-size: 16px; color: var(--orange-deep); }
+  .t-name { font-size: 14px; color: var(--ink-2); }
+  .t-times { display: flex; gap: 16px; margin-top: 8px; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+  .t-times b { color: var(--ink); }
+  .caps { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .cap { font-size: 11px; font-weight: 700; border: 1px solid var(--line); border-radius: 7px; padding: 3px 8px; color: var(--muted); background: var(--cream); }
+  .cap.hot { border-color: #F4C9A8; color: var(--orange-deep); background: #FFF1E4; }
+
+  .steps { background: var(--charcoal); color: #fff; }
+  .steps .section-head p { color: #C9B8AC; }
+  .steps .card { background: var(--charcoal-2); border-color: #3A2D26; }
+  .steps .card p { color: #C9B8AC; }
+  .steps .ico { background: var(--orange); color: #fff; font-weight: 800; font-size: 13px; }
+
+  .trust-box {
+    background: linear-gradient(180deg, #FFF4E8, #fff); border: 1px solid var(--line);
+    border-radius: 28px; padding: 52px 40px; text-align: center;
+  }
+  .checks { display: flex; justify-content: center; gap: 18px 28px; flex-wrap: wrap; color: var(--muted); font-size: 14px; margin: 22px 0 28px; }
+  .checks b { color: var(--teal); margin-right: 6px; }
+
+  footer { text-align: center; padding: 28px 16px 36px; color: var(--faint); font-size: 12.5px; }
+  footer a { color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ── voice overlay ── */
+  .voice-layer {
+    position: fixed; inset: 0; z-index: 80; display: none; place-items: center;
+    background: rgba(18, 12, 8, .78); color: #fff; padding: 24px;
+  }
+  .voice-layer.open { display: grid; }
+  .voice-card { text-align: center; max-width: 420px; }
+  .voice-orb-wrap {
+    width: 196px; height: 196px; margin: 0 auto 22px; position: relative; display: grid; place-items: center;
+  }
+  .voice-orb-wrap img { width: 148px; height: 148px; border-radius: 50%; object-fit: cover; position: relative; z-index: 1; }
+  .ring, .ring-2 {
+    position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(244,161,90,.45);
+  }
+  .voice-layer[data-state="listening"] .ring { animation: ringPulse 1.6s ease-out infinite; }
+  .voice-layer[data-state="listening"] .ring-2 { animation: ringPulse 1.6s ease-out .4s infinite; }
+  .voice-layer[data-state="thinking"] .ring { animation: ringPulse 2.4s ease-out infinite; }
+  @keyframes ringPulse {
+    0% { transform: scale(.72); opacity: .7; }
+    100% { transform: scale(1.18); opacity: 0; }
+  }
+  .wave { display: flex; justify-content: center; gap: 4px; height: 28px; margin: 8px 0 16px; align-items: center; }
+  .wave span { width: 4px; border-radius: 99px; background: var(--amber); animation: wave 1s ease-in-out infinite; }
+  .wave span:nth-child(2) { animation-delay: .1s; } .wave span:nth-child(3) { animation-delay: .2s; }
+  .wave span:nth-child(4) { animation-delay: .3s; } .wave span:nth-child(5) { animation-delay: .15s; }
+  @keyframes wave { 0%,100% { height: 8px; } 50% { height: 26px; } }
+  .voice-card h2 { font-size: 26px; letter-spacing: -.6px; margin-bottom: 6px; }
+  .voice-card p { color: #E8D5C6; margin-bottom: 22px; }
+  .voice-actions { display: flex; justify-content: center; gap: 10px; }
+  .voice-actions .btn { min-width: 120px; justify-content: center; }
+
+  .login-layer {
+    position: fixed; inset: 0; z-index: 70; display: none; place-items: center;
+    background: rgba(28,22,18,.45); padding: 20px;
+  }
+  .login-layer.open { display: grid; }
+  .login-card {
+    background: var(--white); border-radius: 24px; padding: 28px; width: min(400px, 100%);
+    box-shadow: var(--shadow); text-align: left;
+  }
+  .login-card h2 { font-size: 22px; letter-spacing: -.4px; margin-bottom: 8px; }
+  .login-card p { color: var(--muted); font-size: 14.5px; margin-bottom: 20px; }
+
+  @media (max-width: 920px) {
+    .links, .login-desk { display: none; }
+    .menu-btn { display: grid; }
+    .hero-grid { grid-template-columns: 1fr; padding: 18px 0 0; }
+    .hero-copy { order: 0; }
+    .visual { order: 1; min-height: 260px; }
+    .visual img.train { min-height: 260px; mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 100%); object-position: 50% 40%; }
+    .sample-float { left: 16px; right: 16px; width: auto; bottom: 16px; }
+    .assistant { max-width: none; margin-bottom: 18px; }
+    h1 { font-size: 48px; letter-spacing: -1.8px; }
+    .grid-3, .result-grid { grid-template-columns: 1fr; }
+    .section { padding: 64px 0; }
+    .trust-box { padding: 36px 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap nav">
+  <a class="brand" href="index.html" aria-label="BookKaro AI home">
+    <span class="mark" aria-hidden="true"></span>
+    <span>BookKaro<small>AI ASSISTANT</small></span>
+  </a>
+  <nav class="links" aria-label="Primary">
+    <a href="index.html">Home</a>
+    <a href="chat.html">Chat</a>
+    <a href="chat.html?q=meri%20bookings%20dikhao">My Bookings</a>
+    <a href="chat.html?q=mera%20wallet%20batao">Wallet</a>
+  </nav>
+  <div class="nav-right">
+    <a class="btn primary" href="chat.html">Ask AI</a>
+    <button class="btn ghost login-desk" id="login-open" type="button">Login</button>
+    <button class="icon-btn menu-btn" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false">☰</button>
+  </div>
+  <div class="drawer" id="drawer" hidden>
+    <a href="index.html">Home</a>
+    <a href="chat.html">Chat</a>
+    <a href="chat.html?q=meri%20bookings%20dikhao">My Bookings</a>
+    <a href="chat.html?q=mera%20wallet%20batao">Wallet</a>
+    <button type="button" id="login-open-m">Login / Profile</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <div class="eyebrow"><i></i> Online · Bolkar ya type karke poochho</div>
+      <h1>Where are<br><em>you going?</em></h1>
+      <p class="sub">Ask BookKaro to find trains, check live status, compare trains, check fares, PNR and more — naturally.</p>
+      <p class="hinglish">Ask me anything about trains. Hindi · Hinglish · English.</p>
+
+      <div class="assistant" id="assistant">
+        <div class="assistant-head">
+          <span class="orb" id="mini-orb" aria-hidden="true"></span>
+          <div>
+            <b>BookKaro AI</b>
+            <span class="status" id="ai-status">Ask BookKaro anything</span>
+          </div>
+          <span class="langs">हिंदी · EN</span>
+        </div>
+        <form class="composer" id="form">
+          <textarea id="query" rows="2" placeholder="Ask BookKaro anything about your journey…" aria-label="Ask BookKaro"></textarea>
+          <button class="icon mic" id="mic" type="button" title="Voice" aria-label="Start voice">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" stroke="currentColor" stroke-width="1.8"/><path d="M7 11a5 5 0 0 0 10 0M12 16v4M9 20h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>
+          <button class="icon send" type="submit" aria-label="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h12M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </form>
+        <div class="chips">
+          <button class="chip" type="button" data-q="Kal Amritsar se Delhi jaana hai">🚆 Find a train</button>
+          <button class="chip" type="button" data-q="12014 abhi kahan hai?">📍 Live train status</button>
+          <button class="chip" type="button" data-q="Kaunsi train fastest hai?">⚡ Fastest train</button>
+          <button class="chip" type="button" data-q="12014 ka fare batao">💰 Check fare</button>
+          <button class="chip" type="button" data-q="Mera PNR check karo">🎫 Check PNR</button>
+          <button class="chip" type="button" data-q="CC kya hota hai?">💡 Railway questions</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="visual" aria-hidden="false">
+      <img class="train" src="assets/hero-train.jpg" alt="Premium modern train at golden hour" />
+      <aside class="sample-float">
+        <div class="kicker">Sample layout · not live data</div>
+        <strong>Your AI railway assistant</strong>
+        <p>Just tell BookKaro where you want to go — results appear as clean train cards.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="capabilities">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>One assistant. Every railway question.</h2>
+      <p>You don’t need to know how railway systems work. Simply ask BookKaro.</p>
+    </div>
+    <div class="grid-3">
+      <a class="card" href="chat.html?q=Find%20a%20train">
+        <div class="ico">🚆</div>
+        <h3>Find Trains</h3>
+        <p>Tell me where you’re going.</p>
+      </a>
+      <a class="card" href="chat.html?q=Live%20train%20status">
+        <div class="ico">📍</div>
+        <h3>Live Status</h3>
+        <p>Know where your train is right now.</p>
+      </a>
+      <a class="card" href="chat.html?q=Compare%20trains">
+        <div class="ico">⚡</div>
+        <h3>Compare Trains</h3>
+        <p>Find the fastest or shortest journey.</p>
+      </a>
+      <a class="card" href="chat.html?q=Check%20fare%20and%20availability">
+        <div class="ico">💰</div>
+        <h3>Fare &amp; Availability</h3>
+        <p>Check verified railway data.</p>
+      </a>
+      <a class="card" href="chat.html?q=Check%20my%20PNR">
+        <div class="ico">🎫</div>
+        <h3>PNR &amp; Bookings</h3>
+        <p>Manage your journey naturally.</p>
+      </a>
+      <a class="card" href="chat.html?q=What%20does%20RAC%20mean">
+        <div class="ico">💡</div>
+        <h3>Railway Knowledge</h3>
+        <p>Ask anything about RAC, WL, CC, Tatkal and more.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section preview" id="preview">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="note">Example cards — not live railway information</span>
+      <h2>Your AI Railway Assistant</h2>
+      <p>When you ask, BookKaro shows verified results in cards like these. Times below are layout samples only.</p>
+    </div>
+    <div class="result-grid">
+      <article class="tcard">
+        <div class="t-head"><span class="t-no">12014</span><span class="t-name">Amritsar Shatabdi</span></div>
+        <div class="t-times"><span>ASR → NDLS</span><span><b>04:55</b> → <b>06:57</b></span></div>
+        <div class="caps"><span class="cap hot">CC</span><span class="cap">EC</span><span class="cap">Sample</span></div>
+      </article>
+      <article class="tcard">
+        <div class="t-head"><span class="t-no">14542</span><span class="t-name">Example Express</span></div>
+        <div class="t-times"><span>ASR → NDLS</span><span><b>05:10</b> → <b>07:12</b></span></div>
+        <div class="caps"><span class="cap hot">SL</span><span class="cap">3A</span><span class="cap">Sample</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section steps" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>How it works</h2>
+      <p>Simple on the surface. Careful with every railway fact.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="ico">01</div>
+        <h3>Ask naturally</h3>
+        <p>Type or speak your question.</p>
+      </div>
+      <div class="card">
+        <div class="ico">02</div>
+        <h3>BookKaro finds the right source</h3>
+        <p>BookKaro automatically uses the appropriate railway capability.</p>
+      </div>
+      <div class="card">
+        <div class="ico">03</div>
+        <h3>Get a verified answer</h3>
+        <p>Live railway data stays provider-backed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="trust">
+  <div class="wrap">
+    <div class="trust-box">
+      <div class="eyebrow" style="justify-content:center">Built for the journey</div>
+      <h2>Built for railway questions, not just railway searches.</h2>
+      <div class="checks">
+        <span><b>✓</b> Live railway information when available</span>
+        <span><b>✓</b> Verified train data</span>
+        <span><b>✓</b> Natural Hinglish conversations</span>
+        <span><b>✓</b> Voice + text interaction</span>
+        <span><b>✓</b> No guessing when data is unavailable</span>
+      </div>
+      <a class="btn primary" href="chat.html">Ask BookKaro</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  BookKaro AI is an independent assistant — not an official railway booking portal.
+  Information depends on verified data providers.
+  · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a>
+</footer>
+
+<div class="voice-layer" id="voice" data-state="idle" role="dialog" aria-modal="true" aria-labelledby="voice-title">
+  <div class="voice-card">
+    <div class="voice-orb-wrap">
+      <span class="ring"></span>
+      <span class="ring-2"></span>
+      <img src="assets/voice-orb.jpg" alt="" />
+    </div>
+    <h2 id="voice-title">Listening…</h2>
+    <p id="voice-copy">Hi, main BookKaro hoon. Kahan jaana hai?</p>
+    <div class="wave" id="wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="voice-actions">
+      <button class="btn ghost" id="voice-cancel" type="button">Cancel</button>
+      <button class="btn primary" id="voice-stop" type="button">Stop</button>
+    </div>
+  </div>
+</div>
+
+<div class="login-layer" id="login" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="login-card">
+    <h2 id="login-title">Login / Profile</h2>
+    <p>No account is required to ask BookKaro. Chat, bookings and wallet already live in the existing assistant — continue as guest.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn primary" href="chat.html">Continue to chat</a>
+      <button class="btn ghost" id="login-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var input = document.getElementById('query');
+  var statusEl = document.getElementById('ai-status');
+  var voiceEl = document.getElementById('voice');
+  var voiceTitle = document.getElementById('voice-title');
+  var voiceCopy = document.getElementById('voice-copy');
+  var rec = null;
+
+  var placeholders = [
+    'Kal Amritsar se Delhi jaana hai',
+    '12014 abhi kahan hai?',
+    'Kaunsi train fastest hai?',
+    '12014 ka fare batao',
+    'CC kya hota hai?',
+    'Mera PNR check karo'
+  ];
+  var ph = 0;
+  setInterval(function () {
+    if (document.activeElement === input) return;
+    ph = (ph + 1) % placeholders.length;
+    input.placeholder = placeholders[ph];
+  }, 3200);
+
+  function go(q) {
+    q = (q || '').trim();
+    if (q) location.href = 'chat.html?q=' + encodeURIComponent(q.slice(0, 300));
+    else location.href = 'chat.html';
+  }
+
+  document.getElementById('form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    statusEl.textContent = 'Finding the best answer...';
+    go(input.value);
+  });
+  document.querySelectorAll('.chip').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      input.value = btn.getAttribute('data-q') || btn.textContent;
+      go(input.value);
+    });
+  });
+
+  var drawer = document.getElementById('drawer');
+  var menuBtn = document.getElementById('menu-btn');
+  menuBtn.addEventListener('click', function () {
+    var open = drawer.hasAttribute('hidden') === false;
+    if (open) { drawer.hidden = true; drawer.style.display = 'none'; menuBtn.setAttribute('aria-expanded', 'false'); }
+    else { drawer.hidden = false; drawer.style.display = 'block'; menuBtn.setAttribute('aria-expanded', 'true'); }
+  });
+
+  var login = document.getElementById('login');
+  function openLogin() { login.classList.add('open'); }
+  function closeLogin() { login.classList.remove('open'); }
+  document.getElementById('login-open').addEventListener('click', openLogin);
+  document.getElementById('login-open-m').addEventListener('click', function () { openLogin(); drawer.hidden = true; drawer.style.display = 'none'; });
+  document.getElementById('login-close').addEventListener('click', closeLogin);
+  login.addEventListener('click', function (e) { if (e.target === login) closeLogin(); });
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  function setVoice(state, title, copy) {
+    voiceEl.dataset.state = state;
+    voiceTitle.textContent = title;
+    voiceCopy.textContent = copy;
+    statusEl.textContent = title;
+  }
+  function closeVoice() {
+    try { if (rec) rec.stop(); } catch (err) {}
+    rec = null;
+    voiceEl.classList.remove('open');
+    document.getElementById('mic').setAttribute('aria-pressed', 'false');
+    setVoice('idle', 'Ask BookKaro anything', 'Hi, main BookKaro hoon. Kahan jaana hai?');
+  }
+  function startVoice() {
+    voiceEl.classList.add('open');
+    document.getElementById('mic').setAttribute('aria-pressed', 'true');
+    if (!SR) {
+      setVoice('error', "Sorry, I couldn't fetch that right now.", 'Voice is not available in this browser. Type instead.');
+      return;
+    }
+    try {
+      rec = new SR();
+      rec.lang = 'hi-IN';
+      rec.interimResults = true;
+      rec.maxAlternatives = 1;
+      rec.onstart = function () {
+        setVoice('listening', 'Listening...', 'Hi, main BookKaro hoon. Kahan jaana hai?');
+      };
+      rec.onresult = function (e) {
+        var said = e.results[e.results.length - 1][0].transcript;
+        input.value = said;
+        if (e.results[e.results.length - 1].isFinal) {
+          setVoice('thinking', 'Finding the best answer...', said);
+          setTimeout(function () { go(said); }, 450);
+        }
+      };
+      rec.onerror = function (e) {
+        var perm = e && e.error === 'not-allowed';
+        setVoice('error', "Sorry, I couldn't fetch that right now.", perm ? 'Microphone permission is needed for voice.' : 'Voice did not catch that — type instead.');
+      };
+      rec.onend = function () { rec = null; };
+      rec.start();
+    } catch (err) {
+      setVoice('error', "Sorry, I couldn't fetch that right now.", 'Voice did not start. Type your question instead.');
+    }
+  }
+  document.getElementById('mic').addEventListener('click', startVoice);
+  document.getElementById('voice-cancel').addEventListener('click', closeVoice);
+  document.getElementById('voice-stop').addEventListener('click', function () {
+    try { if (rec) rec.stop(); } catch (err) {}
+    var q = (input.value || '').trim();
+    if (q) go(q); else closeVoice();
+  });
+})();
+</script>
+</body>
+</html>
