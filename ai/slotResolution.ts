@@ -70,16 +70,56 @@ export function stationFromDirectInput(query: string): StationResolution | null 
   return null;
 }
 
-/** Pick the station for a query when it is UNIQUE (exact name/code or single match); ambiguous → choice. */
+/** Normalize a junction suffix: "LUDHIANA JN" / "Ludhiana Junction" → base "ludhiana". */
+function stationBaseName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+jn\.?$/, '')
+    .replace(/\s+junction$/, '')
+    .trim();
+}
+
+/**
+ * Smart station resolution for NAMES (user complaint fix): "Ludhiana se Haridwar"
+ * must resolve — providers return "LUDHIANA JN", "LUDHIANA QUICK TRANS", …
+ *
+ * Pick order (deterministic, provider-verified signals only):
+ *   1. exact station code match
+ *   2. exact name match
+ *   3. JUNCTION-SUFFIX match — name's base == query ("haridwar" → "HARIDWAR JN")
+ *   4. unique provider-MAJOR result, or a clear confidence winner (≥0.9, strictly top)
+ *   5. single result
+ * Otherwise → genuinely different stations → the USER chooses (never a silent first pick).
+ */
 export function stationFromLookup(query: string, stations: Station[]): { station: Station | null; choiceNeeded: Station[] | null } {
   if (stations.length === 0) return { station: null, choiceNeeded: null };
   const lowered = query.trim().toLowerCase();
+
   const byCode = stations.filter((station) => station.code.toLowerCase() === lowered);
   if (byCode.length === 1 && byCode[0]) return { station: byCode[0], choiceNeeded: null };
+
   const byExactName = stations.filter((station) => station.name?.toLowerCase() === lowered);
   if (byExactName.length === 1 && byExactName[0]) return { station: byExactName[0], choiceNeeded: null };
+
+  // 3. Junction-suffix: user said the base name; provider returned the Jn/Junction form.
+  const byJunctionSuffix = stations.filter((station) => station.name !== null && stationBaseName(station.name) === lowered);
+  if (byJunctionSuffix.length === 1 && byJunctionSuffix[0]) return { station: byJunctionSuffix[0], choiceNeeded: null };
+
+  // 4a. Unique provider-major station.
+  const majors = stations.filter((station) => station.isMajor === true);
+  if (majors.length === 1 && majors[0]) return { station: majors[0], choiceNeeded: null };
+
+  // 4b. Clear provider-confidence winner.
+  const ranked = [...stations].sort((a, b) => (b.confidence ?? -1) - (a.confidence ?? -1));
+  const top = ranked[0];
+  const second = ranked[1];
+  if (top && (top.confidence ?? 0) >= 0.9 && (top.confidence ?? 0) > (second?.confidence ?? -1)) {
+    return { station: top, choiceNeeded: null };
+  }
+
   if (stations.length === 1 && stations[0]) return { station: stations[0], choiceNeeded: null };
-  // multiple plausible stations → the USER chooses (never silently pick the first)
+  // multiple genuinely different stations → the USER chooses (never silently pick the first)
   return { station: null, choiceNeeded: stations.slice(0, 4) };
 }
 

@@ -39,7 +39,8 @@ export const NZM: Station = { code: 'NZM', name: 'Delhi Hazrat Nizamuddin', zone
 export const JRC: Station = { code: 'JRC', name: 'Jalandhar City', zone: null, state: 'Punjab', latitude: null, longitude: null };
 export const CHD: Station = { code: 'CHD', name: 'Chandigarh', zone: null, state: 'Chandigarh', latitude: null, longitude: null };
 
-export const STATION_INDEX: Station[] = [ASR, LDH, JAT, BEAS, NDLS, DLI, NZM, JRC, CHD];
+export const HW: Station = { code: 'HW', name: 'Haridwar Jn', zone: null, state: 'Uttarakhand', latitude: null, longitude: null };
+export const STATION_INDEX: Station[] = [ASR, LDH, JAT, BEAS, NDLS, DLI, NZM, JRC, CHD, HW];
 
 const SHATABDI: Train = {
   number: '12014',

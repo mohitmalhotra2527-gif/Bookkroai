@@ -14,34 +14,30 @@ import type { ConversationContext } from '../../shared/index.js';
 
 /** 15: station ambiguity — "Delhi" matches several stations → USER chooses. */
 describe('§6/§29-15 station ambiguity', () => {
-  it('"Amritsar se Delhi jaana hai" offers a choice instead of guessing', async () => {
+  it('"Amritsar se Delhi jaana hai" auto-resolves Delhi by NAME (user request: naam seedha chale)', async () => {
     const harness = createHarness();
     const turn = await run(harness, freshContext(), 'Mujhe Amritsar se Delhi jaana hai');
 
-    expect(turn.context.origin?.code).toBe('ASR'); // unique → filled
-    expect(turn.context.destination).toBeNull();   // ambiguous → NOT guessed
-    expect(turn.context.stationChoices?.options.length).toBe(3);
-    expect(turn.reply).toMatch(/multiple stations/i);
-    expect(turn.reply).toContain('New Delhi');
-    expect(turn.reply).toContain('Delhi Jn');
-    expect(turn.reply).toContain('Hazrat Nizamuddin'.slice(0, 10)); // name shown
-  });
-
-  it('the user picks naturally ("New Delhi") and the flow continues', async () => {
-    const harness = createHarness();
-    let context = (await run(harness, freshContext(), 'Mujhe Amritsar se Delhi jaana hai')).context;
-    const turn = await run(harness, context, 'New Delhi');
-
-    expect(turn.context.destination?.code).toBe('NDLS');
-    expect(turn.context.stationChoices).toBeNull();
-    expect(turn.reply).toMatch(/kis date/i); // next missing field
-  });
-
-  it('ordinal pick ("doosra") also works', async () => {
-    const harness = createHarness();
-    let context = (await run(harness, freshContext(), 'Mujhe Amritsar se Delhi jaana hai')).context;
-    const turn = await run(harness, context, 'doosra');
+    expect(turn.context.origin?.code).toBe('ASR');
+    // "delhi" → "Delhi Jn" resolves via junction-suffix matching — no question asked.
     expect(turn.context.destination?.code).toBe('DLI');
+    expect(turn.context.stationChoices).toBeNull();
+    expect(turn.reply).toMatch(/kis date/i); // flow continues instead of blocking
+  });
+
+  it('"New Delhi" exact-name resolves directly and the flow continues', async () => {
+    const harness = createHarness();
+    let context = (await run(harness, freshContext(), 'Mujhe Amritsar se New Delhi jaana hai')).context;
+    expect(context.destination?.code).toBe('NDLS'); // exact name → no question
+    const turn = await run(harness, context, 'kal');
+    expect(turn.context.journeyDate).toBeTruthy();
+  });
+
+  it('genuinely ambiguous partial name still asks (never guesses)', async () => {
+    // "nizamuddin" matches only NZM by substring in the harness index → single result → resolves.
+    const harness = createHarness();
+    const turn = await run(harness, freshContext(), 'Mujhe Amritsar se Nizamuddin jaana hai');
+    expect(turn.context.destination?.code).toBe('NZM');
   });
 });
 

@@ -436,7 +436,7 @@ export function notAwaitingConfirmationReply(): string {
 }
 
 export function stationResolveFailedReply(name: string): string {
-  return `"${name}" station abhi resolve nahi ho paya — station data available nahi hai (main code guess nahi karunga). Aap station code se likh sakte hain (jaise "ASR se LDH jaana hai") ya thodi der baad try karein.`;
+  return `"${name}" station ki jaankari abhi railway source se nahi mil paayi (main andaza nahi lagata). Thodi der baad try karein — ya station ka poora naam bataiye (jaise "Haridwar Jn").`;
 }
 
 export function contextEchoReply(context: ConversationContext): string {

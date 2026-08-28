@@ -58,6 +58,10 @@ export interface Station {
   state: string | null;
   latitude: number | null;
   longitude: number | null;
+  /** Provider match-confidence 0–1 when available (RailCore verified field). */
+  confidence?: number | null;
+  /** Provider flag: major junction/hub when available. */
+  isMajor?: boolean | null;
 }
 
 export interface TrainStop {

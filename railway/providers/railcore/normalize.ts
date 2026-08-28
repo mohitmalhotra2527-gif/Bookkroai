@@ -27,6 +27,7 @@ import {
   asString,
   normalizeTravelClasses,
   normalizeWeekdays,
+  pickBoolean,
   pickNumber,
   pickString,
   pickTime,
@@ -66,6 +67,9 @@ export function normalizeRailCoreStations(body: unknown): Station[] | null {
       state: pickString(record, 'state'),
       latitude: pickNumber(record, 'latitude'),
       longitude: pickNumber(record, 'longitude'),
+      // Verified provider signals (used for smart single-station resolution).
+      confidence: pickNumber(record, 'confidence'),
+      isMajor: pickBoolean(record, 'is_major'),
     });
   }
   return stations;
