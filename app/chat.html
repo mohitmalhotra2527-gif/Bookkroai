@@ -381,10 +381,12 @@
     chat.appendChild(el); down();
   }
 
-  /* ── send: ALWAYS attempts; honest errors, never silent ── */
+  /* ── send: queues during in-flight instead of dropping taps (chip fix) ── */
+  var queued = null;
   function send(text) {
     text = (text || '').trim();
-    if (!text || sending) return;
+    if (!text) return;
+    if (sending) { queued = text; setChipsBusy(true); return; } // queue the tap, never drop
     addMsg(text, 'u');
     if (input) input.value = '';
     sending = true; if (go) go.disabled = true;
@@ -417,8 +419,11 @@
         addMsg('Backend se connect nahi ho paaya. ⚙️ settings check karein — ya wapas homepage se "Start Chatting" karein.', 'b');
       })
       .finally ? null : null;
-    var done = function () { sending = false; if (go) go.disabled = false; if (input) input.focus(); };
-    // finally-equivalent for old browsers
+    var done = function () {
+      sending = false; if (go) go.disabled = false; setChipsBusy(false);
+      if (queued) { var next = queued; queued = null; send(next); } // flush queued tap
+      else if (input) input.focus();
+    };
     setTimeout(done, 100);
   }
 
@@ -458,6 +463,9 @@
     el.style.transform = 'scale(.94)';
     setTimeout(function () { el.style.transform = ''; }, 140);
     send(el.textContent);
+  }
+  function setChipsBusy(busy) {
+    document.querySelectorAll('.chip').forEach(function (el) { el.style.opacity = busy ? '.5' : ''; });
   }
   var chipsEl = $('chips');
   if (chipsEl) {
@@ -553,7 +561,22 @@
       dynChips.appendChild(b);
     });
     dynamicWrap.style.display = 'block';
+    setChipsBusy(sending);
   }
+  dynChips.addEventListener('pointerdown', function (e) { chipTap(e.target); });
+  dynChips.addEventListener('click', function (e) { chipTap(e.target); });
+
+  // Train cards tap-to-select: card #N sends "pehli wali"/"doosri wali"/train number.
+  chat.addEventListener('pointerdown', function (e) {
+    var card = e.target && e.target.closest ? e.target.closest('.tcard') : null;
+    if (!card) return;
+    var idx = Array.prototype.indexOf.call(chat.querySelectorAll('.tcard'), card);
+    var no = card.querySelector('.t-no');
+    var trainNo = no ? (String(no.textContent || '').replace(/^\d+\.\s*/, '').trim().split(' ')[0]) : '';
+    var ordinals = ['pehli wali', 'doosri wali', 'teesri wali', 'chauthi wali', 'paanchvi wali', 'chhati wali'];
+    if (idx >= 0 && idx < 6 && trainNo && /^\d+$/.test(trainNo)) send(trainNo);
+    else if (ordinals[idx]) send(ordinals[idx]);
+  });
   window.__refreshChips = refreshDynamicChips;
 
   /* ── ?q= auto question ── */

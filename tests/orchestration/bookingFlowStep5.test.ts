@@ -163,14 +163,24 @@ describe('10-12: class / availability / fare', () => {
     expect(turn.reply).toMatch(/AVAILABLE \(32 seats\)|AVAILABLE hain \(32 seats\)/i);
   });
 
-  it('12: fare shown with railway fare / service fee / total separated', async () => {
+  it('12: fare NOT shown mid-flow (user request) — only in the FINAL review, fully separated', async () => {
     const harness = createHarness();
     const context = await driveTo(harness, 'trainSelected');
     const turn = await run(harness, context, 'CC');
-    expect(turn.reply).toMatch(/Railway fare: ₹405\.00/);
-    expect(turn.reply).toMatch(/service fee: ₹20\.00/i);
-    expect(turn.reply).toMatch(/Total payable: ₹425\.00/);
-    expect(turn.panel?.kind).toBe('fare');
+    expect(turn.reply).not.toMatch(/Railway fare:/i); // mid-flow reply: availability + passenger question only
+    expect(turn.panel?.kind ?? null).not.toBe('fare');
+
+    // Complete passengers → the FINAL REVIEW carries the fully separated breakdown.
+    let reviewContext = turn.context;
+    reviewContext = (await run(harness, reviewContext, '2')).context;
+    for (const answer of ['Rahul', '30', 'M', 'lower', 'Priya', '28', 'F', 'upper']) {
+      reviewContext = (await run(harness, reviewContext, answer)).context;
+    }
+    expect(reviewContext.bookingStage).toBe('WAITING_CONFIRMATION');
+    const reviewText = [...reviewContext.messages].reverse().map((m) => m.content).join('\n');
+    expect(reviewText).toMatch(/Railway fare: ₹405\.00/);
+    expect(reviewText).toMatch(/service fee: ₹20\.00/i);
+    expect(reviewText).toMatch(/Total: ₹425\.00/);
   });
 });
 

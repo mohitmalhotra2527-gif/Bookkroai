@@ -59,9 +59,9 @@ describe('full selection flow → draft (booking safety visible end-to-end)', ()
     const classTurn = await run(harness, context, 'CC');
     expect(classTurn.context.selectedClass).toBe('CC');
     expect(classTurn.executedTools).toContain('getAvailability'); // §7 fresh availability
-    expect(classTurn.executedTools).toContain('getFare');         // §8 fresh fare
+    expect(classTurn.executedTools).toContain('getFare');         // §8 fare fetched (quietly, for the review)
     expect(classTurn.reply).toMatch(/AVAILABLE/i);
-    expect(classTurn.reply).toMatch(/Railway fare/i);
+    expect(classTurn.reply).not.toMatch(/Railway fare/i);         // fare hidden mid-flow (review-only)
     context = classTurn.context;
 
     const countTurn = await run(harness, context, '2');

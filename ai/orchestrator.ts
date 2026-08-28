@@ -1258,7 +1258,8 @@ async function continueBookingFlow(state: TurnState, usedFallback: boolean): Pro
     replyParts.push(`Availability abhi available nahi hai — ${railwayUnavailableReply(availabilityResult)}`);
   }
 
-  // 2. FARE (fresh provider quote; railway fare + service fee + total shown separately)
+  // 2. FARE — fetched quietly for the draft/review, but NOT shown mid-flow
+  // (user request: fare sirf END mein — final review mein — dikhana hai).
   const fareResult = await executeTool(state, 'getFare', {
     trainNumber,
     fromStationCode: from,
@@ -1269,19 +1270,9 @@ async function continueBookingFlow(state: TurnState, usedFallback: boolean): Pro
   const fare = dataOf<Fare>(fareResult);
   if (fare && fare.breakdown.totalMinor !== null) {
     state.context = { ...state.context, lastFareQuote: fare, updatedAt: nowIso(state) };
-    replyParts.push(fareReply(fare));
-    const railwayTotal = fare.breakdown.totalMinor;
-    state.panel = {
-      kind: 'fare',
-      railwayFareMinor: railwayTotal,
-      serviceFeeMinor: APPLICATION_SERVICE_FEE_MINOR,
-      totalPayableMinor: totalPayableMinor(railwayTotal),
-      travelClass: fare.travelClass,
-    };
     transitionStage(state, 'FARE_REVIEW');
-  } else {
-    replyParts.push('Fare abhi available nahi hai (provider se total fare nahi mila) — confirm tabhi hoga jab fare aa jaye.');
   }
+  // Fare summary deliberately omitted here — it appears in the final booking review.
 
   // 3. PASSENGERS — count first (if missing), then details one at a time.
   if (!state.context.passengerCount) {
