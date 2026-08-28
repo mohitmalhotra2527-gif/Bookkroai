@@ -102,6 +102,27 @@ all Step 1–8 safety suites still green. AI cannot book, debit, or claim succes
   assertion weakened.
 - `npm run build`: PASS.
 
+## Official railway knowledge source configuration (Step 9 revision)
+
+- **Official sources configured** (server-controlled URL map, model never picks URLs):
+  Tatkal Scheme, Quota Codes, PNR/status legend, Seat Availability information and
+  Reservation Rules pages — all on `www.indianrail.gov.in` (PRIMARY), discovered by
+  topic from the query (`detectOfficialPage`).
+- **Allowed domains**: indianrail.gov.in, indianrailways.gov.in, cris.org.in (+www).
+  The web tool accepts only `query` + optional approved `domain`/allowlisted URL;
+  arbitrary URLs, untrusted domains and API-key arguments are rejected pre-fetch.
+- **Rule-sensitive routing**: Tatkal timings, refund/rules/luggage questions bypass
+  the static glossary entirely — official retrieval first; on failure the spec's
+  honest message ("Is information ko verify karne ke liye official railway source
+  abhi available nahi hai."). Stable concepts (CC/RAC/WL/GN) remain deterministic.
+- **Live-data separation re-verified**: availability/live-status/fare/comparison
+  NEVER touch web (tests §K7-10); provenance `web`/`deterministic`/`railcore`/`railkit`.
+- **LIVE VERIFICATION**: official retrieval from indianrail.gov.in SUCCEEDED from
+  this environment (real page content returned in tests §K5) — so this revision is
+  externally verified, not just the graceful-unavailable path (which is also tested).
+- **Tests**: +15 (tests/step9/officialKnowledge.test.ts) — total **525/525 (37 files)**.
+- **Build**: PASS. No deploy (per instruction).
+
 ## Failures & limitations
 - Allowlisted live web retrieval: NOT VERIFIED (sandbox cannot reach the government
   sites) — honest-unavailable path verified instead.

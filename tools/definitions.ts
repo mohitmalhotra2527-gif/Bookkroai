@@ -193,7 +193,10 @@ export const TOOL_DEFINITIONS: readonly ToolDefinition[] = [
     summary: 'Approved general railway knowledge (glossary first; allowlisted official web only as fallback).',
     description:
       'Answers stable CONCEPT questions (classes, quotas, RAC/WL, tatkal, coach types) from the approved deterministic knowledge base, and may attempt retrieval ONLY from allowlisted official railway domains for concepts the glossary does not cover. NEVER used for live data (status/availability/fare/PNR) — those require the railway providers.',
-    input: [field('query', 'string', true, 'General railway concept question (no live-data requests)')],
+    input: [
+      field('query', 'string', true, 'General railway concept question (no live-data requests)'),
+      field('domain', 'string', false, 'Optional approved-domain restriction (must be on the official allowlist)'),
+    ],
     outputDescription: '{ source: deterministic|web, title, url, retrievedText, timestamp }',
     aiRequestable: true,
     executionPolicy: 'AI_REQUEST_SERVER_VALIDATED',

@@ -53,6 +53,7 @@ import type {
   TrainSearchResult,
 } from '../shared/index.js';
 import { composeKnowledgeAnswer, findGlossaryAnswer } from '../shared/railwayKnowledge.js';
+import { HONEST_UNAVAILABLE_MESSAGE, RULE_SENSITIVE_QUERY } from '../tools/executors/knowledgeTools.js';
 import { APPLICATION_SERVICE_FEE_MINOR, totalPayableMinor } from '../shared/serviceFee.js';
 import type { ToolExecutionContext, ToolRegistry } from '../tools/index.js';
 import { canAiRequestTool } from '../tools/permissions.js';
@@ -782,6 +783,18 @@ function helpReply(): string {
 
 async function handleGlossary(state: TurnState, u: AIUnderstandingResult, usedFallback: boolean): Promise<OrchestratorTurn> {
   await maybePauseForInterruption(state, 'GENERAL_RAILWAY_QUERY'); // §4: general Q during booking → answer, then resume
+  // Step 9 official-source config: RULE-SENSITIVE topics (tatkal timings, refund rules,
+  // quota codes, railway rules) are answered ONLY from official retrieval — the static
+  // glossary is never used for them (policy can change; no model-memory answers).
+  if (RULE_SENSITIVE_QUERY.test(state.message)) {
+    const officialResult = await executeTool(state, 'getRailwayKnowledge', { query: state.message.slice(0, 120) });
+    const official = dataOf<{ source: string; sourceTitle: string | null; sourceUrl: string | null; retrievedText: string }>(officialResult);
+    if (official) {
+      const reply = `${official.retrievedText.slice(0, 700)}\n(Source: ${official.sourceTitle ?? 'official railway source'})\n(Generic concept — live data ke liye train ke saath poochhiye.)`;
+      return finish(state, 'GENERAL_RAILWAY_QUERY', reply, { usedFallbackNlu: usedFallback });
+    }
+    return finish(state, 'GENERAL_RAILWAY_QUERY', HONEST_UNAVAILABLE_MESSAGE, { usedFallbackNlu: usedFallback });
+  }
   // Step 9 §10: deterministic approved knowledge FIRST (single term, "X aur Y" difference, coach types…)
   const composed = composeKnowledgeAnswer(state.message) ?? composeKnowledgeAnswer(u.slots.glossaryTerm);
   if (composed) {

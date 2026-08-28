@@ -262,7 +262,10 @@ function extractGlossaryTerm(text: string): string | null {
 }
 
 function isGlossaryQuestion(text: string): boolean {
-  return /\b(kya hot[ai] hai?|kya hot[ai]|kya hai|matlab|meaning|what is|kaunsi class|difference|antar|fark|kya hote hain)\b/i.test(text);
+  // Rule-sensitive policy questions (tatkal timings, refund, rules) are KNOWLEDGE
+  // questions even when they contain words like "booking".
+  if (/tatkal|refund|niyam|\brules?\b|luggage|concession/i.test(text) && /kya|kab|kitn|kaunse|kaise|kaunsi/i.test(text)) return true;
+  return /\b(kya hot[ai] hai?|kya hot[ai]|kya hai|matlab|meaning|what is|kaunsi class|difference|antar|fark|kya hote hain|kab khult|kab khol)\b/i.test(text);
 }
 
 function isJourneyIntent(text: string): boolean {
