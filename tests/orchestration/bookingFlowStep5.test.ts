@@ -62,6 +62,10 @@ function lowBalanceRouter(): RailwayProviderRouter {
       make('RAILCORE', ['stationLookup', 'trainSearch', 'trainInfo', 'timetable', 'liveStatus', 'availability', 'fare']),
       make('RAILKIT', ['trainSearch', 'trainInfo', 'timetable', 'liveStatus', 'availability', 'fare', 'pnr', 'cancelledTrains']),
     ],
+    // Fixed test clock (same as the main harness): 'kal' from the harness clock must
+    // never become "past" when the REAL date rolls forward — date validation is
+    // deterministic against the injected clock, not the wall clock.
+    now: () => new Date('2026-08-26T10:00:00.000Z'),
   });
 }
 
