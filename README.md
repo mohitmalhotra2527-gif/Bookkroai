@@ -45,7 +45,21 @@ npm start         # serve API + shell on http://localhost:3000
 /wallet   wallet interface + guards (implementation deliberately inert)
 /shared   contracts, conversation context engine, intent registry, validators
 /tests    129 tests covering every layer + security & boundary invariants
+/tools/talking-hero  offline renderer for the talking homepage hero (see below)
 ```
+
+## Talking hero (Hindi voice + gestures)
+
+`app/hero.html` shows the horizontal 3:2 homepage hero where the concierge
+greets in Hindi and gestures (namaste → open-palm → questioning tilt) while the
+speech bubble types in sync with the real voice. Assets:
+`app/assets/hero-talking.mp4` (H.264+AAC, 1.3 MB), `.webm` (0.7 MB),
+`.gif` (silent fallback), `hero-concept-3x2.jpg` (poster) and three square pose
+sprites `pose-{1,2,3}-*.jpg` that `app/index.html` / `app/talking-demo.html`
+cross-fade while speaking (`.avatar-ring` + `setGesture()`), with a Devanagari
+subtitle line. Re-render with
+`/home/user/.venv-img/bin/python tools/talking-hero/build_hero.py`
+(voice: `renders/hero-voice-hi.mp3`) — details in `tools/talking-hero/README.md`.
 
 ## Safety invariants (all test-enforced)
 
