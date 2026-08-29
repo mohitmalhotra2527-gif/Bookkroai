@@ -1,0 +1,23 @@
+# Netlify config — full web app: static frontend from app/ + serverless API.
+# Same folder GitHub Pages deploys; the API runs as a Netlify Function so the
+# full app (chat + railway endpoints) works here just like on Vercel.
+[build]
+  command = "npm run build"
+  publish = "app"
+
+[functions]
+  directory = "netlify/functions"
+
+# API requests → serverless adapter (same routing/safety as the node server).
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+
+# Landing page: the horizontal homepage concept preview.
+# (GitHub Pages ignores netlify.toml, so the product landing there is unchanged.)
+[[redirects]]
+  from = "/"
+  to = "/bookkaro_ai_homepage_preview.html"
+  status = 302
+  force = true

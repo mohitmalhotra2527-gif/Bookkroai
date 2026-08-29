@@ -1,0 +1,86 @@
+# Deploys the full web app (static frontend + serverless API) to Netlify.
+#
+# Why via GitHub Actions: the dev sandbox cannot reach netlify.com, but GitHub
+# runners can. The only credential needed is NETLIFY_AUTH_TOKEN (a Netlify
+# Personal Access Token) stored as a repo secret — the workflow creates the
+# site on first run if NETLIFY_SITE_ID is not set, then deploys prod.
+#
+# Optional secrets (set them to enable live data / real AI on the Netlify site):
+#   RAILCORE_API_KEY, RAILKIT_API_KEY, NVIDIA_API_KEY, NVIDIA_API_KEY_2, CORS_ORIGIN
+
+name: Deploy to Netlify
+
+on:
+  push:
+    branches: [arena/01a04d51-bookkroai]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Netlify token secret
+        env:
+          TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::NETLIFY_AUTH_TOKEN secret missing. Add it in repo Settings → Secrets and variables → Actions (Netlify: User settings → Applications → Personal access tokens)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps + build
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli --no-audit --no-fund
+
+      - name: Resolve or create Netlify site
+        id: site
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          SITE_ID="${{ secrets.NETLIFY_SITE_ID }}"
+          if [ -z "$SITE_ID" ]; then
+            SITE_ID="$(netlify sites:create --name bookkaro-sarthi --json 2>/dev/null | jq -r '.id' 2>/dev/null || true)"
+          fi
+          if [ -z "$SITE_ID" ] || [ "$SITE_ID" = "null" ]; then
+            SITE_ID="$(netlify api createSite --data '{"name":"bookkaro-sarthi"}' --json | jq -r '.id')"
+          fi
+          echo "Netlify site id: $SITE_ID"
+          echo "id=$SITE_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy production
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          netlify deploy --prod --site "${{ steps.site.outputs.id }}" \
+            --dir app --functions netlify/functions
+
+      - name: Sync optional env vars to Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          RAILCORE_API_KEY: ${{ secrets.RAILCORE_API_KEY }}
+          RAILKIT_API_KEY: ${{ secrets.RAILKIT_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NVIDIA_API_KEY_2: ${{ secrets.NVIDIA_API_KEY_2 }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+        run: |
+          SITE="${{ steps.site.outputs.id }}"
+          for VAR in RAILCORE_API_KEY RAILKIT_API_KEY NVIDIA_API_KEY NVIDIA_API_KEY_2 CORS_ORIGIN; do
+            VAL="${!VAR}"
+            if [ -n "$VAL" ]; then
+              netlify env:set "$VAR" "$VAL" --site "$SITE" --context prod || true
+            fi
+          done
