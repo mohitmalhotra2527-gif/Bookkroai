@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BookKro Sarthi — Homepage Preview</title>
+<title>BookKaro Sarthi — Horizontal Homepage Concept</title>
 <style>
   :root{
     --orange:#F56B2A;
@@ -23,18 +23,35 @@
   body{
     min-height:100vh;
     background:
-      radial-gradient(1200px 600px at 50% -10%, #fffdf9 0%, var(--off-white) 60%),
+      radial-gradient(1400px 700px at 50% -10%, #fffdf9 0%, var(--off-white) 60%),
       var(--off-white);
     display:flex;
+    flex-direction:column;
     align-items:center;
-    justify-content:center;
+    justify-content:flex-start;
     font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
-    padding:40px 20px;
+    padding:40px 20px 56px;
   }
 
-  /* ===== Phone frame ===== */
-  .phone{
-    width:420px;
+  /* ===== Concept render ===== */
+  .render-card{
+    width:min(1080px,100%);
+    margin-bottom:34px;
+  }
+  .render-card .tag{
+    font-size:12px;letter-spacing:.4px;color:var(--grey);
+    text-transform:uppercase;font-weight:700;margin:0 0 10px 4px;
+  }
+  .render-card .tag b{color:var(--orange);}
+  .render-card img{
+    width:100%;display:block;border-radius:28px;
+    border:1px solid var(--border);
+    box-shadow:0 2px 6px rgba(20,43,61,.06),0 24px 60px rgba(20,43,61,.14);
+  }
+
+  /* ===== Wide landscape device frame ===== */
+  .device{
+    width:min(1080px,100%);
     background:#fff;
     border-radius:32px;
     box-shadow:
@@ -49,196 +66,241 @@
   .header{
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:16px 18px;
+    gap:14px;
+    padding:18px 26px;
     background:#fff;
     border-bottom:1px solid var(--border);
   }
   .app-icon{
-    width:46px;height:46px;
-    border-radius:13px;
+    width:50px;height:50px;
+    border-radius:14px;
     background:linear-gradient(135deg,var(--orange-2),var(--orange));
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 6px 14px rgba(245,107,42,.32);
     flex:none;
   }
-  .app-icon svg{width:26px;height:26px;}
+  .app-icon svg{width:28px;height:28px;}
   .brand{line-height:1.15;}
   .brand .name{
     font-weight:800;
     color:var(--navy);
-    font-size:17px;
+    font-size:clamp(16px,2.2vw,20px);
     letter-spacing:-.2px;
   }
   .brand .status{
-    display:flex;align-items:center;gap:5px;
+    display:flex;align-items:center;gap:6px;
     color:var(--grey);
-    font-size:12px;
-    margin-top:2px;
+    font-size:13px;
+    margin-top:3px;
   }
   .dot{
-    width:7px;height:7px;border-radius:50%;
+    width:8px;height:8px;border-radius:50%;
     background:var(--teal);
     box-shadow:0 0 0 3px rgba(36,168,143,.15);
   }
   .menu{
     margin-left:auto;
-    color:#3d4a54;
-    display:flex;flex-direction:column;gap:3.5px;
-    padding:6px 2px;
+    display:flex;flex-direction:column;gap:4px;
+    padding:8px 4px;
   }
-  .menu span{width:4px;height:4px;border-radius:50%;background:#3d4a54;}
+  .menu span{width:4.5px;height:4.5px;border-radius:50%;background:#3d4a54;}
 
   /* ===== Conversation area ===== */
   .conversation{
     position:relative;
     background:var(--cream);
-    padding:26px 22px 24px;
+    padding:30px 30px 26px;
     overflow:hidden;
   }
-  .scene{
-    position:absolute;inset:0;pointer-events:none;opacity:.5;
-  }
-  .sun{position:absolute;top:20px;right:24px;width:64px;height:64px;border-radius:50%;background:rgba(243,199,68,.28);}
-  .cloud{position:absolute;background:rgba(255,255,255,.75);border-radius:999px;}
-  .cloud.a{top:26px;left:18%;width:70px;height:22px;}
-  .cloud.b{top:54px;right:12%;width:90px;height:24px;}
-  .cloud.c{top:16px;right:34%;width:54px;height:18px;}
-  .hills{position:absolute;bottom:-4px;left:0;right:0;height:60px;
-    background:linear-gradient(180deg,rgba(36,168,143,.08),rgba(36,168,143,0));}
+  .scene{position:absolute;inset:0;pointer-events:none;opacity:.55;}
+  .cloud{position:absolute;background:rgba(255,255,255,.8);border-radius:999px;}
+  .cloud.a{top:30px;left:34%;width:90px;height:24px;}
+  .cloud.b{top:64px;right:10%;width:120px;height:28px;}
+  .cloud.c{top:24px;right:30%;width:70px;height:20px;}
+  .cloud.d{top:52px;left:6%;width:80px;height:22px;}
+  .hills{position:absolute;bottom:-4px;left:0;right:0;height:70px;
+    background:linear-gradient(180deg,rgba(36,168,143,.07),rgba(36,168,143,0));}
   .train{
-    position:absolute;bottom:40px;left:-90px;
-    animation:roll 22s linear infinite;
+    position:absolute;bottom:46px;left:-180px;
+    animation:roll 30s linear infinite;
   }
-  @keyframes roll{to{transform:translateX(620px);}}
-  .bird{position:absolute;color:rgba(20,43,61,.18);font-size:13px;transform:scale(.9);}
-  .bird.b1{top:40px;right:30%;}
-  .bird.b2{top:30px;right:22%;}
-  .bird.b3{top:52px;right:40%;}
+  @keyframes roll{to{transform:translateX(1400px);}}
+  .bird{position:absolute;color:rgba(20,43,61,.16);font-size:14px;}
+  .bird.b1{top:44px;right:26%;}
+  .bird.b2{top:32px;right:21%;}
+  .bird.b3{top:58px;right:33%;}
+  .station{position:absolute;bottom:40px;right:6%;opacity:.5;}
 
   .chat-row{
     position:relative;
     display:flex;
-    align-items:flex-start;
-    gap:14px;
+    align-items:center;
+    gap:26px;
   }
 
   /* Avatar */
-  .avatar{flex:none;width:104px;margin-top:6px;}
-  .avatar svg{width:100%;height:auto;display:block;filter:drop-shadow(0 8px 14px rgba(20,43,61,.12));}
+  .avatar{flex:none;width:clamp(150px,19vw,210px);}
+  .avatar img{
+    width:100%;height:auto;display:block;
+    border-radius:26px;
+    border:5px solid #fff;
+    box-shadow:0 14px 30px rgba(20,43,61,.16), 0 3px 8px rgba(20,43,61,.08);
+    background:#fff;
+  }
+  .goto-chat{cursor:pointer;}
 
-  /* Speech bubble */
+  /* Speech bubble — greeting flows HORIZONTALLY on one line */
   .bubble-col{flex:1;min-width:0;}
   .bubble-label{
-    font-size:11px;color:var(--grey);
-    letter-spacing:.3px;margin:0 0 6px 14px;
+    font-size:12.5px;color:var(--grey);
+    letter-spacing:.3px;margin:0 0 8px 18px;
   }
   .bubble{
     background:#fff;
-    border-radius:20px;
-    border-top-left-radius:6px;
-    padding:18px 20px;
-    box-shadow:0 10px 26px rgba(20,43,61,.10), 0 2px 4px rgba(20,43,61,.04);
-    font-size:16px;
-    line-height:1.5;
+    border-radius:22px;
+    border-top-left-radius:8px;
+    padding:24px 30px;
+    box-shadow:0 12px 30px rgba(20,43,61,.10), 0 2px 4px rgba(20,43,61,.04);
     color:var(--navy);
     font-weight:600;
-    display:flex;flex-wrap:wrap;align-items:baseline;
-    column-gap:.55ch;row-gap:2px;
+    font-size:clamp(16px,2.1vw,23px);
+    line-height:1.55;
   }
-  .bubble .line{display:inline;}
   .bubble .hl{color:var(--orange);font-weight:800;}
-  .bubble .big{font-size:19px;}
 
-  /* ===== Quick actions ===== */
+  /* ===== Quick actions — four pills in one horizontal row ===== */
   .actions{
-    display:flex;
-    gap:12px;
-    padding:20px 22px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    padding:22px 26px;
     background:#fff;
     border-top:1px solid var(--border);
   }
+  @media (max-width:820px){ .actions{grid-template-columns:repeat(2,1fr);} }
   .action{
-    flex:1;
     background:#fff;
     border:1px solid var(--border);
-    border-radius:18px;
-    padding:14px 8px 12px;
-    display:flex;flex-direction:column;align-items:center;gap:9px;
+    border-radius:999px;
+    padding:13px 14px;
+    display:flex;align-items:center;justify-content:center;gap:10px;
     box-shadow:0 4px 12px rgba(20,43,61,.05);
     transition:transform .15s ease, box-shadow .15s ease;
     cursor:pointer;
   }
   .action:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,43,61,.10);}
   .action .ico{
-    width:34px;height:34px;border-radius:11px;
+    width:34px;height:34px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
+    flex:none;
   }
   .action .ico svg{width:19px;height:19px;}
-  .action .lbl{font-size:12.5px;font-weight:800;color:var(--navy);text-align:center;}
+  .action .lbl{font-size:14.5px;font-weight:800;color:var(--navy);white-space:nowrap;}
   .ico.train{background:rgba(36,168,143,.14);}
   .ico.live{background:rgba(242,107,74,.14);}
-  .ico.pnr{background:rgba(243,199,68,.22);}
+  .ico.seat{background:rgba(243,199,68,.22);}
+  .ico.ask{background:linear-gradient(135deg,var(--orange-2),var(--orange));}
 
   /* ===== Input bar ===== */
-  .input-wrap{padding:6px 22px 20px;background:#fff;}
+  .input-wrap{padding:4px 26px 22px;background:#fff;}
   .input-bar{
-    display:flex;align-items:center;gap:10px;
+    display:flex;align-items:center;gap:12px;
     background:#fff;
     border:1px solid var(--border);
     border-radius:999px;
-    padding:8px 10px 8px 8px;
+    padding:9px 11px 9px 9px;
     box-shadow:0 6px 16px rgba(20,43,61,.06);
   }
   .mic{
-    width:40px;height:40px;border-radius:50%;
+    width:44px;height:44px;border-radius:50%;
     border:1.6px solid var(--orange);
     background:#fff;
     display:flex;align-items:center;justify-content:center;
     flex:none;cursor:pointer;
   }
-  .mic svg{width:18px;height:18px;}
+  .mic svg{width:20px;height:20px;}
   .placeholder{
     flex:1;
     color:var(--grey);
-    font-size:14px;
+    font-size:15.5px;
     padding-left:4px;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
   .send{
-    width:40px;height:40px;border-radius:50%;
+    width:44px;height:44px;border-radius:50%;
     background:linear-gradient(135deg,var(--orange-2),var(--orange));
     display:flex;align-items:center;justify-content:center;
     flex:none;cursor:pointer;
     box-shadow:0 6px 14px rgba(245,107,42,.32);
   }
-  .send svg{width:18px;height:18px;}
+  .send svg{width:20px;height:20px;}
   .trust{
-    display:flex;align-items:center;justify-content:center;gap:6px;
-    margin-top:12px;
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    margin-top:13px;
     color:var(--grey);
-    font-size:11.5px;
+    font-size:12.5px;
   }
-  .trust svg{width:12px;height:12px;opacity:.8;}
+  .trust svg{width:13px;height:13px;opacity:.8;}
+
+  /* ===== Responsive: koi bhi mobile size ===== */
+  @media (max-width:700px){
+    .chat-row{flex-direction:column;align-items:center;gap:12px;}
+    .avatar{width:min(52vw,200px);}
+    .bubble-col{width:100%;}
+    .bubble{font-size:15px;padding:16px 18px;border-top-left-radius:22px;}
+    .bubble-label{margin-left:6px;}
+  }
+  @media (max-width:480px){
+    body{padding:18px 10px 28px;}
+    .device{border-radius:22px;}
+    .header{padding:12px 14px;gap:10px;}
+    .app-icon{width:40px;height:40px;border-radius:11px;}
+    .app-icon svg{width:22px;height:22px;}
+    .conversation{padding:16px 12px;}
+    .actions{grid-template-columns:1fr 1fr;gap:8px;padding:12px;}
+    .action{padding:10px 8px;gap:7px;}
+    .action .ico{width:28px;height:28px;}
+    .action .ico svg{width:15px;height:15px;}
+    .action .lbl{font-size:11.5px;}
+    .input-wrap{padding:0 12px 14px;}
+    .mic,.send{width:38px;height:38px;}
+    .mic svg,.send svg{width:16px;height:16px;}
+    .placeholder{font-size:13px;}
+    .trust{font-size:10.5px;}
+    .render-card{margin-bottom:20px;}
+    .render-card .tag{font-size:10px;}
+    .render-card img{border-radius:18px;}
+  }
+  @media (max-width:380px){
+    .action .lbl{white-space:normal;font-size:10.5px;text-align:center;}
+    .brand .status{font-size:11px;}
+  }
 </style>
 </head>
 <body>
 
-  <div class="phone">
+  <!-- AI-generated concept render -->
+  <div class="render-card">
+    <div class="tag">Concept render · <b>BookKaro Sarthi</b> · horizontal homepage</div>
+    <img src="bookkaro_ai_homepage.png" alt="BookKaro Sarthi horizontal homepage concept render: assistant avatar greets with a horizontal speech bubble, four quick actions (Train search, Live status, Seat availability, Ask me anything) and a message input bar.">
+  </div>
+
+  <!-- HTML build of the same concept -->
+  <div class="device">
 
     <!-- Header -->
     <div class="header">
       <div class="app-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
-          <rect x="14" y="3" width="7" height="7" rx="1.5" fill="#fff"/>
-          <rect x="3" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
-          <rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff"/>
-          <path d="M3 6.5h18M3 17.5h18" stroke="#F56B2A" stroke-width="1.2"/>
+          <path d="M12 2c4.4 0 8 1 8 4.6V15a3.6 3.6 0 0 1-3.6 3.6H7.6A3.6 3.6 0 0 1 4 15V6.6C4 3 7.6 2 12 2Z" fill="#fff"/>
+          <rect x="6.4" y="6" width="11.2" height="5.4" rx="1.4" fill="#F56B2A"/>
+          <circle cx="8.6" cy="14.6" r="1.5" fill="#F56B2A"/>
+          <circle cx="15.4" cy="14.6" r="1.5" fill="#F56B2A"/>
+          <path d="M7.4 18.6 5.4 22M16.6 18.6l2 3.4" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="brand">
-        <div class="name">BookKro Sarthi</div>
+        <div class="name">BookKaro Sarthi</div>
         <div class="status"><span class="dot"></span>Online</div>
       </div>
       <div class="menu" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -247,86 +309,58 @@
     <!-- Conversation area -->
     <div class="conversation">
       <div class="scene" aria-hidden="true">
-        <div class="sun"></div>
         <div class="cloud a"></div>
         <div class="cloud b"></div>
         <div class="cloud c"></div>
+        <div class="cloud d"></div>
         <div class="hills"></div>
         <span class="bird b1">⌄</span>
         <span class="bird b2">⌄</span>
         <span class="bird b3">⌄</span>
-        <svg class="train" width="150" height="34" viewBox="0 0 150 34" fill="none">
-          <rect x="6" y="12" width="118" height="16" rx="6" fill="rgba(20,43,61,.10)"/>
-          <rect x="18" y="4" width="26" height="10" rx="3" fill="rgba(20,43,61,.10)"/>
-          <rect x="70" y="6" width="20" height="8" rx="3" fill="rgba(20,43,61,.10)"/>
-          <circle cx="28" cy="30" r="5" fill="rgba(20,43,61,.12)"/>
-          <circle cx="58" cy="30" r="5" fill="rgba(20,43,61,.12)"/>
-          <circle cx="104" cy="30" r="5" fill="rgba(20,43,61,.12)"/>
+        <svg class="station" width="120" height="46" viewBox="0 0 120 46" fill="none">
+          <path d="M10 44V20l20-10 20 10v24" stroke="rgba(20,43,61,.12)" stroke-width="2.5"/>
+          <path d="M70 44V26h40v18" stroke="rgba(20,43,61,.12)" stroke-width="2.5"/>
+          <path d="M78 26v-8h24v8" stroke="rgba(20,43,61,.12)" stroke-width="2.5"/>
+        </svg>
+        <svg class="train" width="220" height="40" viewBox="0 0 220 40" fill="none">
+          <path d="M8 28c0-8 6-14 16-14h20c8 0 12 6 12 14v4H8v-4Z" fill="rgba(20,43,61,.10)"/>
+          <rect x="60" y="14" width="62" height="18" rx="5" fill="rgba(20,43,61,.10)"/>
+          <rect x="128" y="14" width="62" height="18" rx="5" fill="rgba(20,43,61,.10)"/>
+          <rect x="16" y="18" width="10" height="6" rx="2" fill="rgba(255,248,239,.9)"/>
+          <rect x="70" y="18" width="9" height="6" rx="2" fill="rgba(255,248,239,.9)"/>
+          <rect x="86" y="18" width="9" height="6" rx="2" fill="rgba(255,248,239,.9)"/>
+          <rect x="102" y="18" width="9" height="6" rx="2" fill="rgba(255,248,239,.9)"/>
+          <rect x="138" y="18" width="9" height="6" rx="2" fill="rgba(255,248,239,.9)"/>
+          <rect x="154" y="18" width="9" height="6" rx="2" fill="rgba(255,248,239,.9)"/>
+          <rect x="170" y="18" width="9" height="6" rx="2" fill="rgba(255,248,239,.9)"/>
+          <circle cx="26" cy="33" r="4.5" fill="rgba(20,43,61,.12)"/>
+          <circle cx="76" cy="33" r="4.5" fill="rgba(20,43,61,.12)"/>
+          <circle cx="108" cy="33" r="4.5" fill="rgba(20,43,61,.12)"/>
+          <circle cx="144" cy="33" r="4.5" fill="rgba(20,43,61,.12)"/>
+          <circle cx="176" cy="33" r="4.5" fill="rgba(20,43,61,.12)"/>
         </svg>
       </div>
 
       <div class="chat-row">
         <!-- Avatar -->
-        <div class="avatar" aria-hidden="true">
-          <svg viewBox="0 0 120 150" fill="none">
-            <!-- soft backdrop circle -->
-            <circle cx="60" cy="66" r="58" fill="#fff" opacity="0.55"/>
-            <!-- neck -->
-            <rect x="52" y="78" width="16" height="18" rx="7" fill="#E7B08C"/>
-            <!-- shoulders / uniform -->
-            <path d="M28 150 C30 118 42 104 60 104 C78 104 90 118 92 150 Z" fill="#F4E9D8"/>
-            <path d="M28 150 C30 118 42 104 60 104 C78 104 90 118 92 150 Z" fill="none"/>
-            <!-- orange stole -->
-            <path d="M40 116 C52 124 68 124 80 116 L82 126 C66 134 52 134 38 126 Z" fill="#F56B2A"/>
-            <path d="M60 104 L60 150" stroke="#F56B2A" stroke-width="7" stroke-linecap="round" opacity="0.9"/>
-            <!-- BookKro Sarthi tag on uniform -->
-            <rect x="49" y="136" width="22" height="7" rx="3" fill="#F56B2A" opacity="0.9"/>
-            <!-- hair back / bun -->
-            <circle cx="60" cy="30" r="29" fill="#3A2A22"/>
-            <ellipse cx="60" cy="24" rx="27" ry="25" fill="#462F26"/>
-            <!-- face -->
-            <ellipse cx="60" cy="46" rx="19" ry="21" fill="#F2C4A0"/>
-            <!-- fringe -->
-            <path d="M41 44 C40 26 52 16 66 16 C78 16 82 26 80 40 C76 30 66 26 58 28 C52 30 46 38 41 44 Z" fill="#462F26"/>
-            <!-- bun -->
-            <circle cx="60" cy="14" r="11" fill="#3A2A22"/>
-            <path d="M52 18 C50 10 56 4 64 4" stroke="#3A2A22" stroke-width="3" fill="none" stroke-linecap="round"/>
-            <!-- eyes -->
-            <ellipse cx="52" cy="46" rx="3" ry="3.6" fill="#2B1D16"/>
-            <ellipse cx="68" cy="46" rx="3" ry="3.6" fill="#2B1D16"/>
-            <circle cx="53" cy="45" r="1" fill="#fff"/>
-            <circle cx="69" cy="45" r="1" fill="#fff"/>
-            <!-- brows -->
-            <path d="M46 39 C49 36.5 54 36.5 57 38" stroke="#3A2A22" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M63 38 C66 36.5 71 36.5 74 39" stroke="#3A2A22" stroke-width="1.6" stroke-linecap="round"/>
-            <!-- nose -->
-            <path d="M60 48 C59 51 58.6 52.5 58.4 53" stroke="#D99A72" stroke-width="1.4" stroke-linecap="round"/>
-            <!-- smile -->
-            <path d="M53 56 C56 60 64 60 67 56" stroke="#B96A4E" stroke-width="2" stroke-linecap="round" fill="none"/>
-            <!-- blush -->
-            <ellipse cx="46" cy="53" rx="3.4" ry="2" fill="#F0A48E" opacity="0.55"/>
-            <ellipse cx="74" cy="53" rx="3.4" ry="2" fill="#F0A48E" opacity="0.55"/>
-            <!-- earrings -->
-            <circle cx="40.5" cy="52" r="1.8" fill="#F3C744"/>
-            <circle cx="79.5" cy="52" r="1.8" fill="#F3C744"/>
-          </svg>
+        <div class="avatar">
+          <img src="avatar-real-2.png" alt="BookKaro Sarthi assistant smiling with folded hands in namaste">
         </div>
 
-        <!-- Bubble -->
+        <!-- Bubble: wording flows horizontally -->
         <div class="bubble-col">
-          <div class="bubble-label">BookKro Sarthi</div>
+          <div class="bubble-label">BookKaro Sarthi</div>
           <div class="bubble">
-            <span class="line big"><span class="hl">Namaste!</span> 🙏</span>
-            <span class="line">Main <span class="hl">BookKro Sarthi</span> hoon.</span>
-            <span class="line">Bataiye, main aapki kaise madad kar sakti hoon?</span>
+            <span class="line"><span class="hl">Namaste!</span> 🙏 Main <span class="hl">BookKaro Sarthi</span> hoon.</span><br>
+            <span class="line">Batayie, main aapki kaise madad kar sakti hoon?</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Quick actions -->
+    <!-- Quick actions: Train search · Live status · Seat availability · Ask me anything -->
     <div class="actions">
-      <div class="action">
+      <div class="action goto-chat" role="link" tabindex="0">
         <div class="ico train">
           <svg viewBox="0 0 24 24" fill="none">
             <rect x="4" y="3" width="16" height="12" rx="2.5" stroke="#24A88F" stroke-width="1.8"/>
@@ -338,7 +372,7 @@
         </div>
         <div class="lbl">Train search</div>
       </div>
-      <div class="action">
+      <div class="action goto-chat" role="link" tabindex="0">
         <div class="ico live">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M12 21s6-5.1 6-10a6 6 0 1 0-12 0c0 4.9 6 10 6 10Z" stroke="#F26B4A" stroke-width="1.8"/>
@@ -347,8 +381,8 @@
         </div>
         <div class="lbl">Live status</div>
       </div>
-      <div class="action">
-        <div class="ico pnr">
+      <div class="action goto-chat" role="link" tabindex="0">
+        <div class="ico seat">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z" stroke="#D9A412" stroke-width="1.8"/>
             <path d="M3 11h18" stroke="#D9A412" stroke-width="1.8" stroke-dasharray="2.5 2.5"/>
@@ -357,11 +391,21 @@
         </div>
         <div class="lbl">Seat availability</div>
       </div>
+      <div class="action goto-chat" role="link" tabindex="0">
+        <div class="ico ask">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3c5 0 9 3.6 9 8s-4 8-9 8c-1 0-2-.14-2.9-.4L4 20.5l1.2-3.6C4.4 15.5 3 13.4 3 11c0-4.4 4-8 9-8Z" fill="#fff"/>
+            <path d="M9.8 9.2c.3-1.4 1.4-2.2 2.6-2.2 1.4 0 2.6 1 2.6 2.4 0 1.8-2 2-2.4 3.2" stroke="#F56B2A" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12.3" cy="15.4" r="1.2" fill="#F56B2A"/>
+          </svg>
+        </div>
+        <div class="lbl">Ask me anything</div>
+      </div>
     </div>
 
     <!-- Input bar -->
     <div class="input-wrap">
-      <div class="input-bar">
+      <div class="input-bar goto-chat" role="link" tabindex="0">
         <div class="mic" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none">
             <rect x="9" y="3" width="6" height="12" rx="3" stroke="#F56B2A" stroke-width="1.8"/>
@@ -382,11 +426,27 @@
           <rect x="5" y="10" width="14" height="10" rx="2" stroke="#8A9298" stroke-width="1.8"/>
           <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="#8A9298" stroke-width="1.8"/>
         </svg>
-        Your conversations are safe with BookKro Sarthi
+        Your conversations are safe with BookKaro Sarthi
       </div>
     </div>
 
   </div>
 
+<script>
+(function () {
+  'use strict';
+  // Works from both copies: /bookkaro_ai_homepage_preview.html and /app/bookkaro_ai_homepage_preview.html
+  var chat = location.pathname.indexOf('/app/') !== -1 ? 'chat.html' : 'app/chat.html';
+  var els = document.querySelectorAll('.goto-chat');
+  for (var i = 0; i < els.length; i++) {
+    (function (el) {
+      el.addEventListener('click', function () { location.href = chat; });
+      el.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); location.href = chat; }
+      });
+    })(els[i]);
+  }
+})();
+</script>
 </body>
 </html>
