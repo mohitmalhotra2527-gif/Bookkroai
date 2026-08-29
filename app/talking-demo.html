@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>BookKaro AI — Bolkar poochho (voice + live text)</title>
+<title>BookKro Sarthi — Bolkar poochho (voice + live text)</title>
 <meta name="theme-color" content="#FFF8EF" />
 <style>
   :root {
@@ -238,7 +238,7 @@
   <header class="topbar">
     <span class="mark" aria-hidden="true"><svg class="i"><use href="#i-train"/></svg></span>
     <span>
-      <span class="brand">BookKaro AI</span>
+      <span class="brand">BookKro Sarthi</span>
       <span class="status"><i aria-hidden="true"></i>Online</span>
     </span>
     <span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -247,15 +247,15 @@
   <main class="stage">
     <div class="avatar-wrap">
       <div class="avatar-ring" id="avatar">
-      <img class="pose on" data-g="0" src="assets/pose-1-namaste.jpg" alt="BookKaro AI assistant greeting with folded hands" fetchpriority="high" decoding="async" />
+      <img class="pose on" data-g="0" src="assets/pose-1-namaste.jpg" alt="BookKro Sarthi assistant greeting with folded hands" fetchpriority="high" decoding="async" />
       <img class="pose" data-g="1" src="assets/pose-2-present.jpg" alt="" aria-hidden="true" decoding="async" loading="lazy" />
       <img class="pose" data-g="2" src="assets/pose-3-question.jpg" alt="" aria-hidden="true" decoding="async" loading="lazy" />
       </div>
-      <span class="badge">BookKaro AI</span>
+      <span class="badge">BookKro Sarthi</span>
     </div>
 
     <div class="bubble-col">
-      <div class="who">BookKaro AI</div>
+      <div class="who">BookKro Sarthi</div>
       <div class="bubble">
         <div class="line" id="line1"></div>
         <div class="line" id="line2"></div>
@@ -278,7 +278,7 @@
   <section class="actions">
     <button class="act teal" type="button"><span class="ico"><svg class="i"><use href="#i-train"/></svg></span>Train search</button>
     <button class="act coral" type="button"><span class="ico"><svg class="i"><use href="#i-pin"/></svg></span>Live status</button>
-    <button class="act gold" type="button"><span class="ico"><svg class="i"><use href="#i-ticket"/></svg></span>PNR status</button>
+    <button class="act gold" type="button"><span class="ico"><svg class="i"><use href="#i-ticket"/></svg></span>Seat availability</button>
   </section>
 
   <div class="inputbar">
@@ -287,7 +287,7 @@
     <button class="send-btn" type="button" aria-label="Send"><svg class="i"><use href="#i-send"/></svg></button>
   </div>
   <div class="safe">
-    <svg class="i" aria-hidden="true"><use href="#i-lock"/></svg>Your conversations are safe with BookKaro AI
+    <svg class="i" aria-hidden="true"><use href="#i-lock"/></svg>Your conversations are safe with BookKro Sarthi
   </div>
 </div>
 
@@ -304,10 +304,10 @@
   /* three speech-bubble lines (with highlight spans) */
   var lines = [
     { el: l1, parts: [{ t: 'Namaste! 🙏', hl: true }] },
-    { el: l2, parts: [{ t: 'Main ', hl: false }, { t: 'BookKaro Railway Assistant', hl: true }, { t: ' hoon.', hl: false }] },
-    { el: l3, parts: [{ t: 'Bataiye, main aapki kya madad kar sakti hoon?', hl: false }] }
+    { el: l2, parts: [{ t: 'Main ', hl: false }, { t: 'BookKro Sarthi', hl: true }, { t: ' hoon.', hl: false }] },
+    { el: l3, parts: [{ t: 'Bataiye, main aapki kaise madad kar sakti hoon?', hl: false }] }
   ];
-  var subWords = ('नमस्ते! मैं बुककरो रेलवे असिस्टेंट हूँ। आपकी ट्रेन यात्रा को आसान और तनाव-मुक्त बनाने के लिए यहाँ हूँ। बताइए, क्या मदद करूँ?').split(' ');
+  var subWords = ('नमस्ते! मैं बुककरो एआई हूँ। बताइए, मैं आपकी कैसे मदद कर सकती हूँ?').split(' ');
   var subEl = document.getElementById('sub-hi-text');
   var poses = [].slice.call(avatar.querySelectorAll('.pose'));
   var gesture = -1;

@@ -1,12 +1,12 @@
 {
   "version": 2,
   "builds": [
-    { "src": "dist/api/index.js", "use": "@vercel/node", "config": { "maxDuration": 60 } },
-    { "src": "app/**", "use": "@vercel/static" }
+    { "src": "app/**", "use": "@vercel/static" },
+    { "src": "bookkaro_ai_homepage_preview.html", "use": "@vercel/static" },
+    { "src": "bookkaro_ai_homepage.png", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/dist/api?bkpath=/api/$1" },
-    { "src": "/$", "dest": "/app/index.html" },
+    { "src": "/", "dest": "/app/index.html" },
     { "src": "/chat", "dest": "/app/chat.html" },
     { "src": "/privacy", "dest": "/app/privacy.html" },
     { "src": "/terms", "dest": "/app/terms.html" },
