@@ -231,6 +231,15 @@
   .chip .i { color: var(--orange-2); }
   .chip:hover { border-color: #F5CFA9; box-shadow: 0 6px 16px rgba(20,43,61,.1); }
   .chip:active { transform: scale(.96); }
+  .chip.qa-teal .i { color: var(--teal); }
+  .chip.qa-coral .i { color: var(--coral); }
+  .chip.qa-gold .i { color: var(--gold); }
+  .chip.qa-orange .i { color: var(--orange-2); }
+  .privacy {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin: 12px 4px 0; font-size: 11px; color: var(--muted); font-weight: 600;
+  }
+  .privacy .i { width: 12px; height: 12px; color: var(--muted); }
 
   /* ── bottom nav ── */
   .bottom-nav {
@@ -303,6 +312,12 @@
     <symbol id="i-spark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>
     </symbol>
+    <symbol id="i-seat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v2H7v-2a2 2 0 0 0-4 0Z"/><path d="M5 18v2"/><path d="M19 18v2"/>
+    </symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+    </symbol>
   </defs>
 </svg>
 
@@ -351,15 +366,14 @@
       <button class="send" type="submit" aria-label="Send"><svg class="i"><use href="#i-send"/></svg></button>
     </form>
     <div class="composer-hint"><b>Bolkar</b> ya type karke poochho.</div>
+    <div class="privacy"><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg>Your conversations are safe with BookKro Sarthi</div>
   </section>
 
-  <div class="prompts" aria-label="Quick prompts">
-    <button class="chip" type="button" data-q="Kal Amritsar se Delhi jaana hai"><svg class="i sm" aria-hidden="true"><use href="#i-train"/></svg>Find a train</button>
-    <button class="chip" type="button" data-q="12014 ka live status batao"><svg class="i sm" aria-hidden="true"><use href="#i-pin"/></svg>Live status</button>
-    <button class="chip" type="button" data-q="Kaunsi train fastest hai?"><svg class="i sm" aria-hidden="true"><use href="#i-bolt"/></svg>Fastest train</button>
-    <button class="chip" type="button" data-q="12014 ka fare batao"><svg class="i sm" aria-hidden="true"><use href="#i-rupee"/></svg>Check fare</button>
-    <button class="chip" type="button" data-q="Mera PNR check karo"><svg class="i sm" aria-hidden="true"><use href="#i-ticket"/></svg>Check PNR</button>
-    <button class="chip" type="button" data-q="RAC aur WL kya hota hai?"><svg class="i sm" aria-hidden="true"><use href="#i-chat"/></svg>Railway questions</button>
+  <div class="prompts" aria-label="Quick actions">
+    <button class="chip qa-teal" type="button" data-q="Kal Amritsar se Delhi jaana hai"><svg class="i sm" aria-hidden="true"><use href="#i-train"/></svg>Train search</button>
+    <button class="chip qa-coral" type="button" data-q="12014 ka live status batao"><svg class="i sm" aria-hidden="true"><use href="#i-pin"/></svg>Live status</button>
+    <button class="chip qa-gold" type="button" data-q="12014 ki seat availability batao"><svg class="i sm" aria-hidden="true"><use href="#i-seat"/></svg>Seat availability</button>
+    <button class="chip qa-orange" type="button" data-go="chat.html"><svg class="i sm" aria-hidden="true"><use href="#i-spark"/></svg>Ask anything</button>
   </div>
 </div>
 
